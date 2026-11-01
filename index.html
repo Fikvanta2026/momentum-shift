@@ -39,7 +39,7 @@
           boxShadow: {
             'card-warm': '0 10px 25px -5px rgba(255, 87, 34, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
             'card-lift': '0 20px 30px -10px rgba(255, 87, 34, 0.15)',
-            'glow-coral': '0 0 25px rgba(255, 107, 107, 0.45)'
+            'glow-fire': '0 0 15px rgba(255, 87, 34, 0.6)'
           }
         }
       }
@@ -55,12 +55,12 @@
     .tap-press:active {
       transform: scale(0.96);
     }
-    .hide-scrollbar::-webkit-scrollbar {
-      display: none;
+    @keyframes pulse-glow {
+      0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 87, 34, 0.8)); }
+      50% { filter: drop-shadow(0 0 12px rgba(255, 152, 0, 1)); }
     }
-    .hide-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    .fire-active {
+      animation: pulse-glow 1.8s infinite ease-in-out;
     }
   </style>
 </head>
@@ -86,12 +86,17 @@
       <!-- Actions Area -->
       <div class="flex items-center gap-2 shrink-0">
         
-        <!-- Global Streak Counter -->
-        <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-orange-50 border border-orange-100/80 text-orange-600 font-bold text-xs">
-          <i class="ph-fill ph-fire text-orange-500 text-sm animate-pulse"></i>
+        <!-- Global Streak Counter with Dynamic Glow -->
+        <div id="streakBadgeContainer" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-orange-50 border border-orange-100/80 text-orange-600 font-bold text-xs transition-all">
+          <i id="fireIcon" class="ph-fill ph-fire text-orange-500 text-sm"></i>
           <span id="headerStreakCount">0d</span>
           <span class="hidden sm:inline text-slate-400 font-medium">Streak</span>
         </div>
+
+        <!-- Preferences & Tools (Sound + Alerts) Button -->
+        <button onclick="openSettingsModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 tap-press transition-colors">
+          <i class="ph-bold ph-sliders text-sm"></i>
+        </button>
 
         <!-- Cloud Auth Button -->
         <button id="authBtn" onclick="openAuthModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100">
@@ -99,7 +104,7 @@
           <span id="authLabel">Cloud</span>
         </button>
 
-        <!-- New Habit (Desktop / Tablet only) -->
+        <!-- New Habit (Desktop) -->
         <button onclick="openNewHabitModal()" class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-brand-orange to-brand-amber text-white font-bold text-xs shadow-md shadow-orange-500/25 hover:shadow-lg tap-press transition-all">
           <i class="ph-bold ph-plus text-sm"></i>
           <span>New Habit</span>
@@ -253,20 +258,69 @@
       <span class="text-[10px] font-bold">Today</span>
     </button>
 
-    <!-- Floating Add Button for Mobile -->
     <button onclick="openNewHabitModal()" class="w-12 h-12 -mt-5 rounded-full bg-gradient-to-tr from-brand-orange to-brand-amber text-white flex items-center justify-center shadow-lg shadow-orange-500/40 tap-press">
       <i class="ph-bold ph-plus text-2xl"></i>
     </button>
 
-    <button onclick="openSosModal()" class="flex flex-col items-center gap-1 text-slate-400 hover:text-rose-500">
-      <i class="ph-bold ph-first-aid text-xl"></i>
-      <span class="text-[10px] font-bold">SOS</span>
+    <button onclick="openSettingsModal()" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700">
+      <i class="ph-bold ph-sliders text-xl"></i>
+      <span class="text-[10px] font-bold">Audio/Alert</span>
     </button>
   </nav>
 
   <!-- MODALS -->
 
-  <!-- 1. NEW HABIT MODAL -->
+  <!-- 1. SOUND & NOTIFICATION SETTINGS MODAL -->
+  <div id="settingsModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-slate-100 space-y-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-extrabold text-slate-900">Experience & Alerts</h3>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="ph-bold ph-x text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Sound Profile Selector -->
+      <div class="space-y-2">
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Audio Feedback</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="setSoundProfile('chime')" id="sound_chime" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+            🔔 Modern Chime
+          </button>
+          <button onclick="setSoundProfile('zen')" id="sound_zen" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+            🧘 Zen Bell
+          </button>
+          <button onclick="setSoundProfile('arcade')" id="sound_arcade" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+            👾 8-Bit Arcade
+          </button>
+          <button onclick="setSoundProfile('mute')" id="sound_mute" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
+            🔇 Silent Mode
+          </button>
+        </div>
+      </div>
+
+      <!-- Daily Reminder Selector -->
+      <div class="space-y-2 pt-2 border-t border-slate-100">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Daily Push Reminder</label>
+          <span id="notifStatus" class="text-[10px] font-bold text-slate-400">Inactive</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="time" id="reminderTimeInput" class="flex-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold focus:outline-none" />
+          <button onclick="enableDailyReminder()" class="px-3.5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs tap-press hover:bg-brand-orange transition-colors">
+            Set Alert
+          </button>
+        </div>
+        <p class="text-[11px] text-slate-400">Notifies you automatically if your daily 2-min reps aren't completed.</p>
+      </div>
+
+      <button onclick="closeSettingsModal()" class="w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200">
+        Done
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. NEW HABIT MODAL -->
   <div id="newHabitModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-5">
       <div class="flex items-center justify-between">
@@ -306,7 +360,7 @@
     </div>
   </div>
 
-  <!-- 2. AUTH / FIREBASE CLOUD MODAL -->
+  <!-- 3. AUTH / FIREBASE CLOUD MODAL -->
   <div id="authModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-slate-100 space-y-5 text-center">
       <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-2xl">
@@ -347,7 +401,7 @@
     </div>
   </div>
 
-  <!-- 3. SOS OVERCOME LAZINESS MODAL -->
+  <!-- 4. SOS RESCUE MODAL -->
   <div id="sosModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-5">
       <div class="flex items-center gap-3">
@@ -377,7 +431,7 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC & FIREBASE INTEGRATION -->
+  <!-- JAVASCRIPT ENGINE -->
   <script>
     // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
@@ -405,6 +459,137 @@
     } catch(err) {
       console.warn("Firebase Init Fallback:", err);
     }
+
+    // --- SOUND PROFILES SYSTEM ---
+    let activeSound = localStorage.getItem('momentum_sound') || 'chime';
+
+    function setSoundProfile(profile) {
+      activeSound = profile;
+      localStorage.setItem('momentum_sound', profile);
+      updateSoundUI();
+      if (profile !== 'mute') playSoundEffect();
+    }
+
+    function updateSoundUI() {
+      ['chime', 'zen', 'arcade', 'mute'].forEach(key => {
+        const btn = document.getElementById(`sound_${key}`);
+        if (!btn) return;
+        if (key === activeSound) {
+          btn.className = 'p-2.5 rounded-xl border border-orange-500 bg-orange-50 text-brand-orange text-xs font-black shadow-sm';
+        } else {
+          btn.className = 'p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-bold hover:bg-slate-50';
+        }
+      });
+    }
+
+    function playSoundEffect() {
+      if (activeSound === 'mute') return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+        if (activeSound === 'chime') {
+          // Punchy triad chime
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.1);
+          osc.frequency.exponentialRampToValueAtTime(783.99, ctx.currentTime + 0.2);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.4);
+        } else if (activeSound === 'zen') {
+          // Deep resonant singing bowl tone
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(432, ctx.currentTime);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 1.2);
+        } else if (activeSound === 'arcade') {
+          // Retro game level-up tone
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(330, ctx.currentTime);
+          osc.frequency.setValueAtTime(392, ctx.currentTime + 0.08);
+          osc.frequency.setValueAtTime(659, ctx.currentTime + 0.16);
+          osc.frequency.setValueAtTime(987, ctx.currentTime + 0.24);
+          gain.gain.setValueAtTime(0.12, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.35);
+        }
+      } catch(e) {}
+    }
+
+    // --- DAILY REMINDER ALERTS ENGINE ---
+    let reminderTime = localStorage.getItem('momentum_reminder_time') || '20:00';
+
+    function initDailyReminder() {
+      const input = document.getElementById('reminderTimeInput');
+      if (input) input.value = reminderTime;
+      const status = document.getElementById('notifStatus');
+      if (Notification.permission === 'granted') {
+        if (status) {
+          status.innerText = `Active @ ${reminderTime}`;
+          status.className = 'text-[10px] font-bold text-emerald-600';
+        }
+      }
+    }
+
+    function enableDailyReminder() {
+      const val = document.getElementById('reminderTimeInput').value;
+      if (!val) return;
+      reminderTime = val;
+      localStorage.setItem('momentum_reminder_time', val);
+
+      if (!('Notification' in window)) {
+        alert('This browser does not support notifications.');
+        return;
+      }
+
+      Notification.requestPermission().then(permission => {
+        const status = document.getElementById('notifStatus');
+        if (permission === 'granted') {
+          status.innerText = `Active @ ${reminderTime}`;
+          status.className = 'text-[10px] font-bold text-emerald-600';
+          new Notification('Momentum Shift Alerts Active', {
+            body: `Daily 2-min reminder scheduled for ${reminderTime}. Keep the chain alive!`,
+            icon: 'https://cdn-icons-png.flaticon.com/512/599/599388.png'
+          });
+        } else {
+          status.innerText = 'Permission Denied';
+          status.className = 'text-[10px] font-bold text-rose-500';
+        }
+      });
+    }
+
+    // Background Interval Checker for Daily Reminder
+    setInterval(() => {
+      if (Notification.permission !== 'granted') return;
+      const now = new Date();
+      const currentHM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      if (currentHM === reminderTime && now.getSeconds() < 10) {
+        const todayKey = getTodayKey();
+        const pending = habits.filter(h => !h.history || !h.history[todayKey]);
+        if (pending.length > 0) {
+          new Notification('⚡ Momentum Shift: Protect Your Identity', {
+            body: `You still have ${pending.length} micro-action(s) left. Take just 2 minutes now!`,
+            icon: 'https://cdn-icons-png.flaticon.com/512/599/599388.png'
+          });
+        }
+      }
+    }, 10000);
 
     // --- DEFAULT INITIAL HABITS ---
     const DEFAULT_HABITS = [
@@ -437,7 +622,6 @@
     let habits = [];
     let velocityChartInstance = null;
 
-    // Helper to generate mock history for demo
     function getMockHistory(rate) {
       const hist = {};
       const today = new Date();
@@ -450,31 +634,11 @@
       return hist;
     }
 
-    // Get Today's Key
     function getTodayKey() {
       return new Date().toISOString().split('T')[0];
     }
 
-    // Audio chime effect using Web Audio API
-    function playCheckChime() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.1);
-        osc.frequency.exponentialRampToValueAtTime(783.99, ctx.currentTime + 0.2);
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.35);
-      } catch(e) {}
-    }
-
-    // --- STORAGE ENGINE (FIREBASE OR LOCALSTORAGE) ---
+    // --- STORAGE ENGINE ---
     function loadHabits() {
       if (currentUser && isFirebaseReady) {
         db.collection("users").doc(currentUser.uid).collection("habits").get()
@@ -491,7 +655,7 @@
             renderApp();
           })
           .catch((err) => {
-            console.error("Firestore read error, falling back to local:", err);
+            console.error("Firestore read fallback:", err);
             loadLocalHabits();
           });
       } else {
@@ -526,7 +690,7 @@
       }
     }
 
-    // --- CORE APP RENDERING ---
+    // --- APP RENDERING ---
     function renderApp() {
       renderVitalsAndGauge();
       renderHabitCards();
@@ -575,10 +739,21 @@
         titleEl.innerHTML = `<span>Habit Explorer</span> <i class="ph-fill ph-seal-check text-brand-orange text-lg"></i>`;
       }
 
+      // Dynamic Streak Fire Glow Calculation
       let maxStreak = 0;
       habits.forEach(h => { if (h.streak > maxStreak) maxStreak = h.streak; });
       document.getElementById('headerStreakCount').innerText = `${maxStreak}d`;
       document.getElementById('habitCountBadge').innerText = `${total} Total`;
+
+      const fireIcon = document.getElementById('fireIcon');
+      const badge = document.getElementById('streakBadgeContainer');
+      if (maxStreak >= 3) {
+        fireIcon.classList.add('fire-active');
+        badge.classList.add('shadow-glow-fire');
+      } else {
+        fireIcon.classList.remove('fire-active');
+        badge.classList.remove('shadow-glow-fire');
+      }
     }
 
     function renderHabitCards() {
@@ -653,7 +828,7 @@
       } else {
         habit.history[todayKey] = true;
         habit.streak = (habit.streak || 0) + 1;
-        playCheckChime();
+        playSoundEffect();
 
         if (typeof confetti !== 'undefined') {
           confetti({
@@ -805,6 +980,15 @@
     }
 
     // Modal Handlers
+    function openSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('hidden');
+      updateSoundUI();
+      initDailyReminder();
+    }
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    }
+
     function openNewHabitModal() {
       document.getElementById('newHabitModal').classList.remove('hidden');
       document.getElementById('habitTitleInput').value = '';
@@ -841,6 +1025,7 @@
       auth.signOut().then(() => closeAuthModal());
     }
 
+    // --- AUTH STATE LISTENER ---
     if (isFirebaseReady && auth) {
       auth.onAuthStateChanged((user) => {
         currentUser = user;
@@ -874,6 +1059,10 @@
     } else {
       loadHabits();
     }
+
+    // Initialize Preferences
+    updateSoundUI();
+    initDailyReminder();
   </script>
 </body>
 </html>
