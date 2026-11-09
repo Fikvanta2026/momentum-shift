@@ -84,7 +84,6 @@
           <i class="ph-bold ph-sliders text-sm"></i>
         </button>
 
-        <!-- Auth Status Button -->
         <button id="authBtn" onclick="openAuthModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100">
           <i id="authIcon" class="ph-bold ph-database text-sm"></i>
           <span id="authLabel">Cloud</span>
@@ -294,19 +293,18 @@
     </div>
   </div>
 
-  <!-- AUTH MODAL WITH LOGGED IN / OUT STATES -->
+  <!-- AUTH MODAL -->
   <div id="authModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-slate-100 space-y-5 text-center">
       <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-2xl">
         <i class="ph-bold ph-database"></i>
       </div>
 
-      <div id="authModalHeader">
+      <div>
         <h3 class="text-lg font-black text-slate-900">Supabase Cloud Sync</h3>
         <p class="text-xs text-slate-500 mt-1">Connect your account to sync across devices.</p>
       </div>
 
-      <!-- Logged Out View -->
       <div id="authLoggedOutView" class="space-y-3">
         <input type="email" id="magicEmailInput" placeholder="Enter your email" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/30" />
         <button onclick="signInWithMagicLink()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs tap-press transition-colors">
@@ -315,7 +313,6 @@
         <p id="magicLinkNotice" class="text-[10px] text-slate-400"></p>
       </div>
 
-      <!-- Logged In View -->
       <div id="authLoggedInView" class="hidden space-y-3">
         <div class="p-3 bg-emerald-50/60 border border-emerald-100 rounded-2xl text-left">
           <p class="text-[11px] font-bold text-emerald-800">Connected Account</p>
@@ -352,7 +349,6 @@
   </div>
 
   <script>
-    // --- SUPABASE CLIENT ---
     var SUPABASE_URL = "https://ihddakddlyzfrvbuhfcz.supabase.co";
     var SUPABASE_ANON_KEY = "sb_publishable_Xs2laFMCzGChcoxavx6WSA_pAstVL_K";
     var sbClient = null;
@@ -401,9 +397,9 @@
 
     // --- DATA STATE ---
     var DEFAULT_HABITS = [
-      { id: 'h_1', title: 'Fitness & Health', micro: 'Put on shoes & do 5 squats', category: 'fitness', streak: 3, history: {} },
-      { id: 'h_2', title: 'Side Business Work', micro: 'Open laptop & write 1 line', category: 'business', streak: 5, history: {} },
-      { id: 'h_3', title: 'Focus Reading', micro: 'Read 1 single page', category: 'mind', streak: 1, history: {} }
+      { id: 'h_1', title: 'Fitness & Health', micro_action: 'Put on shoes & do 5 squats', category: 'fitness', streak: 3, history: {} },
+      { id: 'h_2', title: 'Side Business Work', micro_action: 'Open laptop & write 1 line', category: 'business', streak: 5, history: {} },
+      { id: 'h_3', title: 'Focus Reading', micro_action: 'Read 1 single page', category: 'mind', streak: 1, history: {} }
     ];
 
     var habits = [];
@@ -487,7 +483,7 @@
             <span class="text-xs font-bold text-orange-600">🔥 ${h.streak || 0}d</span>
           </div>
           <h3 class="text-base font-extrabold text-slate-800 mt-2">${h.title}</h3>
-          <p class="text-xs text-slate-500 mt-1">🎯 2-Min: ${h.micro}</p>
+          <p class="text-xs text-slate-500 mt-1">🎯 2-Min: ${h.micro_action || h.micro || ''}</p>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
             <button onclick="deleteHabit('${h.id}')" class="text-slate-300 hover:text-rose-500 text-xs font-bold">Delete</button>
             <button onclick="toggleHabit('${h.id}')" class="px-4 py-2 rounded-xl font-bold text-xs tap-press ${
@@ -525,11 +521,14 @@
           id: habit.id,
           user_id: currentUser.id,
           title: habit.title,
-          micro: habit.micro,
+          micro_action: habit.micro_action || habit.micro || '',
+          identity: habit.title,
           category: habit.category,
           streak: habit.streak,
           history: habit.history
-        }).catch(() => {});
+        }).then(({ error }) => {
+          if (error) console.error("Supabase toggle upsert error:", error);
+        });
       }
     }
 
@@ -541,9 +540,10 @@
 
       const newHabit = {
         id: 'h_' + Date.now(),
-        title,
-        micro,
-        category,
+        title: title,
+        micro_action: micro,
+        identity: title,
+        category: category,
         streak: 0,
         history: {}
       };
@@ -557,11 +557,15 @@
           id: newHabit.id,
           user_id: currentUser.id,
           title: newHabit.title,
-          micro: newHabit.micro,
+          micro_action: newHabit.micro_action,
+          identity: newHabit.identity,
           category: newHabit.category,
           streak: newHabit.streak,
           history: newHabit.history
-        }).catch(() => {});
+        }).then(({ error }) => {
+          if (error) console.error("Supabase insert error:", error);
+          else console.log("Habit saved to Supabase successfully!");
+        });
       }
     }
 
@@ -675,15 +679,13 @@
       }
     }
 
-    // --- AUTO-INITIALIZE ON LOAD ---
+    // Auto Init on Page Load
     window.addEventListener('DOMContentLoaded', async () => {
       if (sbClient) {
-        // Check active session (including redirect token parsing)
         const { data: { session } } = await sbClient.auth.getSession();
         currentUser = session?.user || null;
         updateAuthUI(currentUser);
 
-        // Listen for realtime auth changes
         sbClient.auth.onAuthStateChange((_event, session) => {
           currentUser = session?.user || null;
           updateAuthUI(currentUser);
