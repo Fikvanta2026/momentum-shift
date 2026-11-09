@@ -13,11 +13,8 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-  <!-- Firebase Compat SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
     tailwind.config = {
@@ -86,14 +83,14 @@
       <!-- Actions Area -->
       <div class="flex items-center gap-2 shrink-0">
         
-        <!-- Global Streak Counter with Dynamic Glow -->
+        <!-- Global Streak Counter with Glow -->
         <div id="streakBadgeContainer" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-orange-50 border border-orange-100/80 text-orange-600 font-bold text-xs transition-all">
           <i id="fireIcon" class="ph-fill ph-fire text-orange-500 text-sm"></i>
           <span id="headerStreakCount">0d</span>
           <span class="hidden sm:inline text-slate-400 font-medium">Streak</span>
         </div>
 
-        <!-- Preferences & Tools (Sound + Alerts) Button -->
+        <!-- Preferences & Tools Button -->
         <button onclick="openSettingsModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 tap-press transition-colors">
           <i class="ph-bold ph-sliders text-sm"></i>
         </button>
@@ -160,7 +157,6 @@
             </div>
           </div>
 
-          <!-- SOS Intervention Button -->
           <button onclick="openSosModal()" class="px-4 py-2 rounded-xl bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm tap-press transition-all shrink-0">
             <i class="ph-bold ph-first-aid text-base text-rose-500"></i>
             <span>SOS: Feeling Lazy?</span>
@@ -174,9 +170,7 @@
         
         <div class="relative w-44 h-44 flex items-center justify-center my-2">
           <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-            <!-- Background Ring -->
             <circle cx="50" cy="50" r="40" stroke="#F1F5F9" stroke-width="8" fill="transparent" />
-            <!-- Progress Ring -->
             <circle id="progressCircle" cx="50" cy="50" r="40" stroke="url(#progressGradient)" stroke-width="8" stroke-linecap="round" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="251.2" class="transition-all duration-1000 ease-out" />
             
             <defs>
@@ -188,7 +182,6 @@
             </defs>
           </svg>
 
-          <!-- Inner Content -->
           <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
             <span id="circlePercent" class="text-3xl font-black text-slate-900 leading-none">0%</span>
             <span id="circleRatio" class="text-xs font-bold text-slate-400 mt-1">0 of 0 Done</span>
@@ -212,7 +205,6 @@
         <span id="habitCountBadge" class="text-xs font-bold text-slate-400">0 Total</span>
       </div>
 
-      <!-- Habit Cards Container -->
       <div id="habitGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <!-- Rendered via JavaScript -->
       </div>
@@ -236,12 +228,10 @@
         </div>
       </div>
 
-      <!-- Chart View -->
       <div id="chartContainer" class="h-64 w-full">
         <canvas id="velocityChart"></canvas>
       </div>
 
-      <!-- 30-Day Heatmap Grid View -->
       <div id="gridContainer" class="hidden">
         <div id="heatmapGrid" class="grid grid-cols-6 sm:grid-cols-10 gap-2 pt-2">
           <!-- Rendered via JavaScript -->
@@ -264,23 +254,22 @@
 
     <button onclick="openSettingsModal()" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700">
       <i class="ph-bold ph-sliders text-xl"></i>
-      <span class="text-[10px] font-bold">Audio/Alert</span>
+      <span class="text-[10px] font-bold">Preferences</span>
     </button>
   </nav>
 
   <!-- MODALS -->
 
-  <!-- 1. SOUND & NOTIFICATION SETTINGS MODAL -->
+  <!-- 1. PREFERENCES & DATA MODAL -->
   <div id="settingsModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-slate-100 space-y-6">
       <div class="flex items-center justify-between">
-        <h3 class="text-base font-extrabold text-slate-900">Experience & Alerts</h3>
+        <h3 class="text-base font-extrabold text-slate-900">Preferences & Data</h3>
         <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600">
           <i class="ph-bold ph-x text-lg"></i>
         </button>
       </div>
 
-      <!-- Sound Profile Selector -->
       <div class="space-y-2">
         <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Audio Feedback</label>
         <div class="grid grid-cols-2 gap-2">
@@ -299,7 +288,6 @@
         </div>
       </div>
 
-      <!-- Daily Reminder Selector -->
       <div class="space-y-2 pt-2 border-t border-slate-100">
         <div class="flex items-center justify-between">
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Daily Push Reminder</label>
@@ -311,10 +299,17 @@
             Set Alert
           </button>
         </div>
-        <p class="text-[11px] text-slate-400">Notifies you automatically if your daily 2-min reps aren't completed.</p>
       </div>
 
-      <button onclick="closeSettingsModal()" class="w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200">
+      <div class="space-y-2 pt-2 border-t border-slate-100">
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Offline Data Safety</label>
+        <button onclick="exportHabitsBackupJSON()" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 tap-press">
+          <i class="ph-bold ph-download-simple text-sm text-brand-orange"></i>
+          <span>Export Habits Backup (JSON)</span>
+        </button>
+      </div>
+
+      <button onclick="closeSettingsModal()" class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800">
         Done
       </button>
     </div>
@@ -333,12 +328,12 @@
       <div class="space-y-4">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">What is the broad goal?</label>
-          <input type="text" id="habitTitleInput" placeholder="e.g. Weight Loss, Read Books, Side Business" class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-brand-orange" />
+          <input type="text" id="habitTitleInput" maxlength="100" placeholder="e.g. Weight Loss, Read Books, Side Business" class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-brand-orange" />
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-brand-orange mb-1.5">The 2-Minute Micro Action (Non-Negotiable)</label>
-          <input type="text" id="habitMicroInput" placeholder="e.g. Wear running shoes, Read 1 single page, Write 1 prompt" class="w-full px-4 py-2.5 rounded-2xl bg-orange-50/50 border border-orange-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-brand-orange" />
+          <label class="block text-xs font-bold uppercase tracking-wider text-brand-orange mb-1.5">The 2-Minute Micro Action</label>
+          <input type="text" id="habitMicroInput" maxlength="140" placeholder="e.g. Wear running shoes, Read 1 single page, Write 1 prompt" class="w-full px-4 py-2.5 rounded-2xl bg-orange-50/50 border border-orange-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-brand-orange" />
           <p class="text-[11px] text-slate-400 mt-1">Make it so small it's embarrassing not to do it.</p>
         </div>
 
@@ -360,20 +355,39 @@
     </div>
   </div>
 
-  <!-- 3. AUTH / FIREBASE CLOUD MODAL -->
+  <!-- 3. SUPABASE CLOUD AUTH MODAL -->
   <div id="authModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-slate-100 space-y-5 text-center">
-      <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-2xl">
-        <i class="ph-bold ph-cloud-arrow-up"></i>
+      <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-2xl">
+        <i class="ph-bold ph-database"></i>
       </div>
 
       <div>
-        <h3 class="text-lg font-black text-slate-900">Cloud Sync & Backup</h3>
-        <p class="text-xs text-slate-500 mt-1">Save your habits permanently across Mobile, Tablet, and Desktop.</p>
+        <h3 class="text-lg font-black text-slate-900">Supabase Cloud Sync</h3>
+        <p class="text-xs text-slate-500 mt-1">Safely back up your habits and streaks with PostgreSQL Row-Level Security.</p>
       </div>
 
       <div id="authLoggedOutView" class="space-y-3">
-        <button onclick="loginWithGoogle()" class="w-full py-2.5 px-4 rounded-2xl border border-slate-200 hover:border-slate-300 font-bold text-xs flex items-center justify-center gap-2 text-slate-700 bg-white shadow-sm tap-press">
+        <!-- Magic Link / Email Input -->
+        <div class="space-y-2 text-left">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Sign in with Email (Magic Link)</label>
+          <div class="flex items-center gap-2">
+            <input type="email" id="magicEmailInput" placeholder="you@example.com" class="flex-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/30" />
+            <button onclick="signInWithMagicLink()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs tap-press transition-colors">
+              Send Link
+            </button>
+          </div>
+          <p id="magicLinkNotice" class="text-[10px] text-slate-400"></p>
+        </div>
+
+        <div class="relative flex py-2 items-center">
+          <div class="flex-grow border-t border-slate-100"></div>
+          <span class="flex-shrink mx-3 text-[10px] font-bold text-slate-300 uppercase">Or continue with</span>
+          <div class="flex-grow border-t border-slate-100"></div>
+        </div>
+
+        <!-- Google OAuth via Supabase -->
+        <button onclick="signInWithGoogleSupabase()" class="w-full py-2.5 px-4 rounded-2xl border border-slate-200 hover:border-slate-300 font-bold text-xs flex items-center justify-center gap-2 text-slate-700 bg-white shadow-sm tap-press">
           <svg class="w-4 h-4" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -386,13 +400,13 @@
 
       <div id="authLoggedInView" class="hidden space-y-4">
         <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100 text-left flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-sm shrink-0" id="userAvatar">U</div>
+          <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm shrink-0" id="userAvatar">U</div>
           <div class="truncate">
             <div id="userName" class="text-xs font-extrabold text-slate-800 truncate">User</div>
             <div id="userEmail" class="text-[10px] text-slate-400 truncate">email@example.com</div>
           </div>
         </div>
-        <button onclick="logoutFirebase()" class="w-full py-2 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 font-bold text-xs transition-colors">
+        <button onclick="signOutSupabase()" class="w-full py-2 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 font-bold text-xs transition-colors">
           Sign Out
         </button>
       </div>
@@ -431,33 +445,21 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT ENGINE -->
+  <!-- JAVASCRIPT ENGINE WITH SUPABASE CLIENT -->
   <script>
-    // --- FIREBASE CONFIGURATION ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyAm1oxx44UxrvTwqPfh78MlpVNhsrcGHv8",
-      authDomain: "momentum-shift-5179d.firebaseapp.com",
-      projectId: "momentum-shift-5179d",
-      storageBucket: "momentum-shift-5179d.firebasestorage.app",
-      messagingSenderId: "698505754774",
-      appId: "1:698505754774:web:6cb68298d17ee25cc46ab7",
-      measurementId: "G-F34YDMW2JZ"
-    };
+    // --- SUPABASE CONFIGURATION ---
+    const SUPABASE_URL = "https://ihisdakddlycfrvbuhkz.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_Xs2laFMCzGChcoxavx6WSA_pAstVL_K";
 
+    let supabase = null;
     let currentUser = null;
-    let auth = null;
-    let db = null;
-    let isFirebaseReady = false;
 
     try {
-      if (typeof firebase !== 'undefined') {
-        firebase.initializeApp(firebaseConfig);
-        auth = firebase.auth();
-        db = firebase.firestore();
-        isFirebaseReady = true;
+      if (typeof window.supabase !== 'undefined') {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       }
     } catch(err) {
-      console.warn("Firebase Init Fallback:", err);
+      console.warn("Supabase init error:", err);
     }
 
     // --- SOUND PROFILES SYSTEM ---
@@ -486,9 +488,7 @@
       if (activeSound === 'mute') return;
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
         if (activeSound === 'chime') {
-          // Punchy triad chime
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'triangle';
@@ -502,7 +502,6 @@
           osc.start();
           osc.stop(ctx.currentTime + 0.4);
         } else if (activeSound === 'zen') {
-          // Deep resonant singing bowl tone
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sine';
@@ -514,7 +513,6 @@
           osc.start();
           osc.stop(ctx.currentTime + 1.2);
         } else if (activeSound === 'arcade') {
-          // Retro game level-up tone
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'square';
@@ -539,7 +537,7 @@
       const input = document.getElementById('reminderTimeInput');
       if (input) input.value = reminderTime;
       const status = document.getElementById('notifStatus');
-      if (Notification.permission === 'granted') {
+      if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
         if (status) {
           status.innerText = `Active @ ${reminderTime}`;
           status.className = 'text-[10px] font-bold text-emerald-600';
@@ -574,9 +572,8 @@
       });
     }
 
-    // Background Interval Checker for Daily Reminder
     setInterval(() => {
-      if (Notification.permission !== 'granted') return;
+      if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
       const now = new Date();
       const currentHM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       if (currentHM === reminderTime && now.getSeconds() < 10) {
@@ -590,6 +587,21 @@
         }
       }
     }, 10000);
+
+    // --- JSON OFFLINE BACKUP ---
+    function exportHabitsBackupJSON() {
+      try {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(habits, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `momentum-shift-backup-${getTodayKey()}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+      } catch(e) {
+        console.error("Backup export failed:", e);
+      }
+    }
 
     // --- DEFAULT INITIAL HABITS ---
     const DEFAULT_HABITS = [
@@ -638,29 +650,42 @@
       return new Date().toISOString().split('T')[0];
     }
 
-    // --- STORAGE ENGINE ---
-    function loadHabits() {
-      if (currentUser && isFirebaseReady) {
-        db.collection("users").doc(currentUser.uid).collection("habits").get()
-          .then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-              habits = [];
-              querySnapshot.forEach((doc) => {
-                habits.push({ id: doc.id, ...doc.data() });
-              });
-            } else {
-              habits = [...DEFAULT_HABITS];
-              saveAllHabits();
-            }
-            renderApp();
-          })
-          .catch((err) => {
-            console.error("Firestore read fallback:", err);
-            loadLocalHabits();
-          });
-      } else {
-        loadLocalHabits();
+    // --- SUPABASE STORAGE & SYNC ENGINE ---
+    async function loadHabits() {
+      if (currentUser && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('habits')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .eq('is_archived', false);
+
+          if (error) throw error;
+
+          if (data && data.length > 0) {
+            habits = data;
+          } else {
+            // First time login: seed default habits into user's Supabase account
+            habits = [...DEFAULT_HABITS];
+            await Promise.all(habits.map(h => 
+              supabase.from('habits').insert({
+                id: h.id,
+                user_id: currentUser.id,
+                title: h.title,
+                micro: h.micro,
+                category: h.category,
+                streak: h.streak,
+                history: h.history
+              })
+            ));
+          }
+          renderApp();
+          return;
+        } catch(err) {
+          console.warn("Supabase fetch fallback to local:", err);
+        }
       }
+      loadLocalHabits();
     }
 
     function loadLocalHabits() {
@@ -674,20 +699,38 @@
       renderApp();
     }
 
-    function saveAllHabits() {
+    async function persistHabit(habit) {
       localStorage.setItem('momentum_habits', JSON.stringify(habits));
-      if (currentUser && isFirebaseReady) {
-        habits.forEach(h => {
-          db.collection("users").doc(currentUser.uid).collection("habits").doc(h.id).set(h);
-        });
+      if (currentUser && supabase) {
+        try {
+          const { error } = await supabase.from('habits').upsert({
+            id: habit.id,
+            user_id: currentUser.id,
+            title: habit.title,
+            micro: habit.micro,
+            category: habit.category,
+            streak: habit.streak,
+            history: habit.history,
+            updated_at: new Date().toISOString()
+          });
+          if (error) console.error("Supabase upsert error:", error);
+        } catch(e) {
+          console.warn("Sync failed:", e);
+        }
       }
     }
 
-    function persistHabit(habit) {
+    async function deleteHabit(id) {
+      habits = habits.filter(h => h.id !== id);
       localStorage.setItem('momentum_habits', JSON.stringify(habits));
-      if (currentUser && isFirebaseReady) {
-        db.collection("users").doc(currentUser.uid).collection("habits").doc(habit.id).set(habit);
+      if (currentUser && supabase) {
+        try {
+          await supabase.from('habits').delete().eq('id', id).eq('user_id', currentUser.id);
+        } catch(e) {
+          console.warn("Supabase delete failed:", e);
+        }
       }
+      renderApp();
     }
 
     // --- APP RENDERING ---
@@ -739,7 +782,6 @@
         titleEl.innerHTML = `<span>Habit Explorer</span> <i class="ph-fill ph-seal-check text-brand-orange text-lg"></i>`;
       }
 
-      // Dynamic Streak Fire Glow Calculation
       let maxStreak = 0;
       habits.forEach(h => { if (h.streak > maxStreak) maxStreak = h.streak; });
       document.getElementById('headerStreakCount').innerText = `${maxStreak}d`;
@@ -866,15 +908,6 @@
       renderApp();
     }
 
-    function deleteHabit(id) {
-      habits = habits.filter(h => h.id !== id);
-      saveAllHabits();
-      if (currentUser && isFirebaseReady) {
-        db.collection("users").doc(currentUser.uid).collection("habits").doc(id).delete();
-      }
-      renderApp();
-    }
-
     function renderWeeklyChart() {
       const ctx = document.getElementById('velocityChart');
       if (!ctx) return;
@@ -914,9 +947,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
+          plugins: { legend: { display: false } },
           scales: {
             y: {
               beginAtZero: true,
@@ -1012,55 +1043,93 @@
       document.getElementById('authModal').classList.add('hidden');
     }
 
-    function loginWithGoogle() {
-      if (!isFirebaseReady) return;
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then(() => closeAuthModal())
-        .catch(err => console.error("Google Auth Error:", err));
+    // --- SUPABASE AUTHENTICATION METHODS ---
+    async function signInWithMagicLink() {
+      const email = document.getElementById('magicEmailInput').value.trim();
+      const notice = document.getElementById('magicLinkNotice');
+      if (!email) return;
+
+      notice.innerText = "Sending magic link...";
+      notice.className = "text-[10px] text-brand-orange font-bold";
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.origin }
+      });
+
+      if (error) {
+        notice.innerText = error.message;
+        notice.className = "text-[10px] text-rose-500 font-bold";
+      } else {
+        notice.innerText = "Check your email for the login link!";
+        notice.className = "text-[10px] text-emerald-600 font-bold";
+      }
     }
 
-    function logoutFirebase() {
-      if (!isFirebaseReady) return;
-      auth.signOut().then(() => closeAuthModal());
+    async function signInWithGoogleSupabase() {
+      if (!supabase) return;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin }
+      });
+      if (error) console.error("Google signin error:", error);
     }
 
-    // --- AUTH STATE LISTENER ---
-    if (isFirebaseReady && auth) {
-      auth.onAuthStateChanged((user) => {
-        currentUser = user;
-        const authBtn = document.getElementById('authBtn');
-        const authLabel = document.getElementById('authLabel');
-        const authIcon = document.getElementById('authIcon');
-        const loggedInView = document.getElementById('authLoggedInView');
-        const loggedOutView = document.getElementById('authLoggedOutView');
+    async function signOutSupabase() {
+      if (!supabase) return;
+      await supabase.auth.signOut();
+      currentUser = null;
+      updateAuthUI(null);
+      loadLocalHabits();
+      closeAuthModal();
+    }
 
-        if (user) {
-          authLabel.innerText = user.displayName ? user.displayName.split(' ')[0] : 'Synced';
-          authIcon.className = 'ph-fill ph-check-circle text-emerald-500';
-          authBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-200 bg-emerald-50 text-emerald-700';
+    function updateAuthUI(user) {
+      const authBtn = document.getElementById('authBtn');
+      const authLabel = document.getElementById('authLabel');
+      const authIcon = document.getElementById('authIcon');
+      const loggedInView = document.getElementById('authLoggedInView');
+      const loggedOutView = document.getElementById('authLoggedOutView');
 
-          document.getElementById('userName').innerText = user.displayName || 'Google User';
-          document.getElementById('userEmail').innerText = user.email || '';
-          document.getElementById('userAvatar').innerText = (user.displayName || 'U')[0].toUpperCase();
+      if (user) {
+        authLabel.innerText = user.user_metadata?.full_name ? user.user_metadata.full_name.split(' ')[0] : 'Synced';
+        authIcon.className = 'ph-fill ph-check-circle text-emerald-500';
+        authBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-200 bg-emerald-50 text-emerald-700';
 
-          loggedInView.classList.remove('hidden');
-          loggedOutView.classList.add('hidden');
-        } else {
-          authLabel.innerText = 'Cloud';
-          authIcon.className = 'ph-bold ph-cloud text-blue-500';
-          authBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-blue-200 bg-blue-50 text-blue-600';
+        document.getElementById('userName').innerText = user.user_metadata?.full_name || 'User';
+        document.getElementById('userEmail').innerText = user.email || '';
+        document.getElementById('userAvatar').innerText = (user.email || 'U')[0].toUpperCase();
 
-          loggedInView.classList.add('hidden');
-          loggedOutView.classList.remove('hidden');
-        }
+        loggedInView.classList.remove('hidden');
+        loggedOutView.classList.add('hidden');
+      } else {
+        authLabel.innerText = 'Cloud';
+        authIcon.className = 'ph-bold ph-database text-emerald-600';
+        authBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-200 bg-emerald-50 text-emerald-700';
+
+        loggedInView.classList.add('hidden');
+        loggedOutView.classList.remove('hidden');
+      }
+    }
+
+    // --- SUPABASE SESSION LISTENER ---
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        currentUser = session?.user || null;
+        updateAuthUI(currentUser);
+        loadHabits();
+      });
+
+      supabase.auth.onAuthStateChange((_event, session) => {
+        currentUser = session?.user || null;
+        updateAuthUI(currentUser);
         loadHabits();
       });
     } else {
       loadHabits();
     }
 
-    // Initialize Preferences
+    // Initialize UI preferences
     updateSoundUI();
     initDailyReminder();
   </script>
