@@ -5,15 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Momentum Shift • Visual Consistency Engine</title>
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-  <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
@@ -66,8 +61,6 @@
   <!-- TOP APP BAR -->
   <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
-      
-      <!-- Logo Area -->
       <div class="flex items-center gap-2.5 min-w-0">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-orange to-brand-amber flex items-center justify-center text-white shadow-md shadow-orange-500/20 shrink-0">
           <i class="ph-bold ph-lightning text-xl"></i>
@@ -80,47 +73,35 @@
         </div>
       </div>
 
-      <!-- Actions Area -->
       <div class="flex items-center gap-2 shrink-0">
-        
-        <!-- Global Streak Counter with Glow -->
         <div id="streakBadgeContainer" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-orange-50 border border-orange-100/80 text-orange-600 font-bold text-xs transition-all">
           <i id="fireIcon" class="ph-fill ph-fire text-orange-500 text-sm"></i>
           <span id="headerStreakCount">0d</span>
           <span class="hidden sm:inline text-slate-400 font-medium">Streak</span>
         </div>
 
-        <!-- Preferences & Tools Button -->
         <button onclick="openSettingsModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 tap-press transition-colors">
           <i class="ph-bold ph-sliders text-sm"></i>
         </button>
 
-        <!-- Cloud Auth Button -->
-        <button id="authBtn" onclick="openAuthModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100">
-          <i id="authIcon" class="ph-bold ph-cloud text-sm"></i>
+        <button id="authBtn" onclick="openAuthModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100">
+          <i id="authIcon" class="ph-bold ph-database text-sm"></i>
           <span id="authLabel">Cloud</span>
         </button>
 
-        <!-- New Habit (Desktop) -->
         <button onclick="openNewHabitModal()" class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-brand-orange to-brand-amber text-white font-bold text-xs shadow-md shadow-orange-500/25 hover:shadow-lg tap-press transition-all">
           <i class="ph-bold ph-plus text-sm"></i>
           <span>New Habit</span>
         </button>
-
       </div>
     </div>
   </header>
 
   <!-- MAIN CONTAINER -->
   <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 flex-1 w-full space-y-8">
-
-    <!-- HERO MOTIVATION & VITALS -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-      
-      <!-- Identity Hero Card -->
       <div class="lg:col-span-2 rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-white via-orange-50/30 to-amber-50/40 border border-orange-100/80 shadow-card-warm relative overflow-hidden flex flex-col justify-between">
         <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-orange-400/10 rounded-full blur-2xl pointer-events-none"></div>
-        
         <div>
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-extrabold mb-4">
             <i class="ph-bold ph-sparkle"></i>
@@ -137,7 +118,6 @@
           </p>
         </div>
 
-        <!-- Identity Rank Gauge -->
         <div class="mt-6 pt-6 border-t border-orange-100/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div class="space-y-1">
             <div class="text-xs font-bold text-slate-400 tracking-wider uppercase">Identity Status</div>
@@ -164,7 +144,6 @@
         </div>
       </div>
 
-      <!-- Live Circular Progress Dial -->
       <div class="rounded-3xl p-6 bg-white border border-slate-100 shadow-card-warm flex flex-col items-center justify-center relative">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Today's Execution</h3>
         
@@ -192,10 +171,9 @@
           Lock in your first 2-minute rep today!
         </p>
       </div>
-
     </section>
 
-    <!-- HABITS LIST SECTION -->
+    <!-- HABITS LIST -->
     <section class="space-y-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -205,12 +183,10 @@
         <span id="habitCountBadge" class="text-xs font-bold text-slate-400">0 Total</span>
       </div>
 
-      <div id="habitGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Rendered via JavaScript -->
-      </div>
+      <div id="habitGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </section>
 
-    <!-- VISUAL ANALYTICS: VELOCITY CHART & 30-DAY GRID -->
+    <!-- VELOCITY & GRID -->
     <section class="rounded-3xl p-6 bg-white border border-slate-100 shadow-card-warm space-y-5">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -233,15 +209,12 @@
       </div>
 
       <div id="gridContainer" class="hidden">
-        <div id="heatmapGrid" class="grid grid-cols-6 sm:grid-cols-10 gap-2 pt-2">
-          <!-- Rendered via JavaScript -->
-        </div>
+        <div id="heatmapGrid" class="grid grid-cols-6 sm:grid-cols-10 gap-2 pt-2"></div>
       </div>
     </section>
-
   </main>
 
-  <!-- MOBILE BOTTOM NAVIGATION BAR -->
+  <!-- MOBILE BOTTOM NAVIGATION -->
   <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-100 px-6 py-2 flex items-center justify-between">
     <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center gap-1 text-brand-orange">
       <i class="ph-fill ph-house text-xl"></i>
@@ -259,12 +232,10 @@
   </nav>
 
   <!-- MODALS -->
-
-  <!-- 1. PREFERENCES & DATA MODAL -->
   <div id="settingsModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-slate-100 space-y-6">
       <div class="flex items-center justify-between">
-        <h3 class="text-base font-extrabold text-slate-900">Preferences & Data</h3>
+        <h3 class="text-base font-extrabold text-slate-900">Preferences</h3>
         <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600">
           <i class="ph-bold ph-x text-lg"></i>
         </button>
@@ -273,49 +244,17 @@
       <div class="space-y-2">
         <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Audio Feedback</label>
         <div class="grid grid-cols-2 gap-2">
-          <button onclick="setSoundProfile('chime')" id="sound_chime" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
-            🔔 Modern Chime
-          </button>
-          <button onclick="setSoundProfile('zen')" id="sound_zen" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
-            🧘 Zen Bell
-          </button>
-          <button onclick="setSoundProfile('arcade')" id="sound_arcade" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
-            👾 8-Bit Arcade
-          </button>
-          <button onclick="setSoundProfile('mute')" id="sound_mute" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
-            🔇 Silent Mode
-          </button>
+          <button onclick="setSoundProfile('chime')" id="sound_chime" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">🔔 Modern Chime</button>
+          <button onclick="setSoundProfile('zen')" id="sound_zen" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">🧘 Zen Bell</button>
+          <button onclick="setSoundProfile('arcade')" id="sound_arcade" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">👾 8-Bit Arcade</button>
+          <button onclick="setSoundProfile('mute')" id="sound_mute" class="p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all">🔇 Silent</button>
         </div>
       </div>
 
-      <div class="space-y-2 pt-2 border-t border-slate-100">
-        <div class="flex items-center justify-between">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Daily Push Reminder</label>
-          <span id="notifStatus" class="text-[10px] font-bold text-slate-400">Inactive</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <input type="time" id="reminderTimeInput" class="flex-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold focus:outline-none" />
-          <button onclick="enableDailyReminder()" class="px-3.5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs tap-press hover:bg-brand-orange transition-colors">
-            Set Alert
-          </button>
-        </div>
-      </div>
-
-      <div class="space-y-2 pt-2 border-t border-slate-100">
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Offline Data Safety</label>
-        <button onclick="exportHabitsBackupJSON()" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 tap-press">
-          <i class="ph-bold ph-download-simple text-sm text-brand-orange"></i>
-          <span>Export Habits Backup (JSON)</span>
-        </button>
-      </div>
-
-      <button onclick="closeSettingsModal()" class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800">
-        Done
-      </button>
+      <button onclick="closeSettingsModal()" class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800">Done</button>
     </div>
   </div>
 
-  <!-- 2. NEW HABIT MODAL -->
   <div id="newHabitModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-5">
       <div class="flex items-center justify-between">
@@ -327,19 +266,18 @@
 
       <div class="space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">What is the broad goal?</label>
-          <input type="text" id="habitTitleInput" maxlength="100" placeholder="e.g. Weight Loss, Read Books, Side Business" class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-brand-orange" />
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Goal Title</label>
+          <input type="text" id="habitTitleInput" maxlength="100" placeholder="e.g. Daily Workout" class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/30" />
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-brand-orange mb-1.5">The 2-Minute Micro Action</label>
-          <input type="text" id="habitMicroInput" maxlength="140" placeholder="e.g. Wear running shoes, Read 1 single page, Write 1 prompt" class="w-full px-4 py-2.5 rounded-2xl bg-orange-50/50 border border-orange-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-brand-orange" />
-          <p class="text-[11px] text-slate-400 mt-1">Make it so small it's embarrassing not to do it.</p>
+          <label class="block text-xs font-bold uppercase tracking-wider text-brand-orange mb-1.5">2-Minute Micro Action</label>
+          <input type="text" id="habitMicroInput" maxlength="140" placeholder="e.g. 5 Push-ups" class="w-full px-4 py-2.5 rounded-2xl bg-orange-50/50 border border-orange-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/30" />
         </div>
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Category</label>
-          <select id="habitCategoryInput" class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/30">
+          <select id="habitCategoryInput" class="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none">
             <option value="fitness">🏃 Fitness & Health</option>
             <option value="business">💼 Side Income & Work</option>
             <option value="mind">🧠 Learning & Focus</option>
@@ -350,72 +288,31 @@
 
       <div class="pt-2 flex items-center justify-end gap-2">
         <button onclick="closeNewHabitModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">Cancel</button>
-        <button onclick="saveNewHabit()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-orange to-brand-amber text-white font-bold text-xs shadow-md shadow-orange-500/30 hover:shadow-lg tap-press">Save Habit</button>
+        <button onclick="saveNewHabit()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-orange to-brand-amber text-white font-bold text-xs shadow-md tap-press">Save Habit</button>
       </div>
     </div>
   </div>
 
-  <!-- 3. SUPABASE CLOUD AUTH MODAL -->
   <div id="authModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-slate-100 space-y-5 text-center">
       <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-2xl">
         <i class="ph-bold ph-database"></i>
       </div>
-
       <div>
         <h3 class="text-lg font-black text-slate-900">Supabase Cloud Sync</h3>
-        <p class="text-xs text-slate-500 mt-1">Safely back up your habits and streaks with PostgreSQL Row-Level Security.</p>
+        <p class="text-xs text-slate-500 mt-1">Connect your account to sync across devices.</p>
       </div>
 
-      <div id="authLoggedOutView" class="space-y-3">
-        <!-- Magic Link / Email Input -->
-        <div class="space-y-2 text-left">
-          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Sign in with Email (Magic Link)</label>
-          <div class="flex items-center gap-2">
-            <input type="email" id="magicEmailInput" placeholder="you@example.com" class="flex-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/30" />
-            <button onclick="signInWithMagicLink()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs tap-press transition-colors">
-              Send Link
-            </button>
-          </div>
-          <p id="magicLinkNotice" class="text-[10px] text-slate-400"></p>
-        </div>
-
-        <div class="relative flex py-2 items-center">
-          <div class="flex-grow border-t border-slate-100"></div>
-          <span class="flex-shrink mx-3 text-[10px] font-bold text-slate-300 uppercase">Or continue with</span>
-          <div class="flex-grow border-t border-slate-100"></div>
-        </div>
-
-        <!-- Google OAuth via Supabase -->
-        <button onclick="signInWithGoogleSupabase()" class="w-full py-2.5 px-4 rounded-2xl border border-slate-200 hover:border-slate-300 font-bold text-xs flex items-center justify-center gap-2 text-slate-700 bg-white shadow-sm tap-press">
-          <svg class="w-4 h-4" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          <span>Continue with Google</span>
-        </button>
-      </div>
-
-      <div id="authLoggedInView" class="hidden space-y-4">
-        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100 text-left flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm shrink-0" id="userAvatar">U</div>
-          <div class="truncate">
-            <div id="userName" class="text-xs font-extrabold text-slate-800 truncate">User</div>
-            <div id="userEmail" class="text-[10px] text-slate-400 truncate">email@example.com</div>
-          </div>
-        </div>
-        <button onclick="signOutSupabase()" class="w-full py-2 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 font-bold text-xs transition-colors">
-          Sign Out
-        </button>
+      <div class="space-y-3">
+        <input type="email" id="magicEmailInput" placeholder="Enter your email" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none" />
+        <button onclick="signInWithMagicLink()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs tap-press">Send Login Link</button>
+        <p id="magicLinkNotice" class="text-[10px] text-slate-400"></p>
       </div>
 
       <button onclick="closeAuthModal()" class="text-xs font-semibold text-slate-400 hover:text-slate-600">Close</button>
     </div>
   </div>
 
-  <!-- 4. SOS RESCUE MODAL -->
   <div id="sosModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-5">
       <div class="flex items-center gap-3">
@@ -427,429 +324,155 @@
           <p class="text-xs text-slate-400">Behavioral Science Rescue Mode</p>
         </div>
       </div>
-
-      <div class="space-y-3">
-        <div class="p-3.5 rounded-2xl bg-orange-50 border border-orange-100 text-xs text-orange-950">
-          <strong class="font-black text-brand-orange block mb-1">Rule 1: Never Miss Twice</strong>
-          Missing one day is an accident. Missing two days starts a new bad habit. Do just 30 seconds today to keep the streak identity alive.
-        </div>
-        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600">
-          <strong class="font-black text-slate-800 block mb-1">Rule 2: Lower the Bar to Floor Level</strong>
-          Don't do the full workout. Just do 2 push-ups. Don't build the entire app. Just open the laptop and write 1 line.
-        </div>
+      <div class="p-3.5 rounded-2xl bg-orange-50 border border-orange-100 text-xs text-orange-950">
+        <strong class="font-black text-brand-orange block mb-1">Rule: Never Miss Twice</strong>
+        Just do 1 single rep or 30 seconds today. That's all it takes to keep the streak identity alive.
       </div>
-
       <button onclick="closeSosModal()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-orange to-brand-amber text-white font-bold text-xs shadow-md tap-press">
-        Understood! I'll do 1 micro rep right now.
+        Understood! Doing 1 rep now.
       </button>
     </div>
   </div>
 
-  <!-- JAVASCRIPT ENGINE WITH SUPABASE CLIENT -->
   <script>
-    // --- SUPABASE CONFIGURATION ---
+    // --- SAFE CLIENT INITIALIZATION ---
+    let supabaseClient = null;
+    let currentUser = null;
     const SUPABASE_URL = "https://ihisdakddlycfrvbuhkz.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_Xs2laFMCzGChcoxavx6WSA_pAstVL_K";
 
-    let supabase = null;
-    let currentUser = null;
-
     try {
-      if (typeof window.supabase !== 'undefined') {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       }
-    } catch(err) {
-      console.warn("Supabase init error:", err);
+    } catch (e) {
+      console.warn("Supabase initialization deferred:", e);
     }
 
-    // --- SOUND PROFILES SYSTEM ---
+    // --- SOUND ENGINE ---
     let activeSound = localStorage.getItem('momentum_sound') || 'chime';
-
     function setSoundProfile(profile) {
       activeSound = profile;
       localStorage.setItem('momentum_sound', profile);
       updateSoundUI();
-      if (profile !== 'mute') playSoundEffect();
+      if (profile !== 'mute') playSound();
     }
-
     function updateSoundUI() {
       ['chime', 'zen', 'arcade', 'mute'].forEach(key => {
         const btn = document.getElementById(`sound_${key}`);
         if (!btn) return;
-        if (key === activeSound) {
-          btn.className = 'p-2.5 rounded-xl border border-orange-500 bg-orange-50 text-brand-orange text-xs font-black shadow-sm';
-        } else {
-          btn.className = 'p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-bold hover:bg-slate-50';
-        }
+        btn.className = (key === activeSound)
+          ? 'p-2.5 rounded-xl border border-orange-500 bg-orange-50 text-brand-orange text-xs font-black shadow-sm'
+          : 'p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 text-xs font-bold hover:bg-slate-50';
       });
     }
-
-    function playSoundEffect() {
+    function playSound() {
       if (activeSound === 'mute') return;
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        if (activeSound === 'chime') {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.1);
-          osc.frequency.exponentialRampToValueAtTime(783.99, ctx.currentTime + 0.2);
-          gain.gain.setValueAtTime(0.2, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.4);
-        } else if (activeSound === 'zen') {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(432, ctx.currentTime);
-          gain.gain.setValueAtTime(0.3, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start();
-          osc.stop(ctx.currentTime + 1.2);
-        } else if (activeSound === 'arcade') {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'square';
-          osc.frequency.setValueAtTime(330, ctx.currentTime);
-          osc.frequency.setValueAtTime(392, ctx.currentTime + 0.08);
-          osc.frequency.setValueAtTime(659, ctx.currentTime + 0.16);
-          osc.frequency.setValueAtTime(987, ctx.currentTime + 0.24);
-          gain.gain.setValueAtTime(0.12, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.35);
-        }
-      } catch(e) {}
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      } catch (e) {}
     }
 
-    // --- DAILY REMINDER ALERTS ENGINE ---
-    let reminderTime = localStorage.getItem('momentum_reminder_time') || '20:00';
-
-    function initDailyReminder() {
-      const input = document.getElementById('reminderTimeInput');
-      if (input) input.value = reminderTime;
-      const status = document.getElementById('notifStatus');
-      if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-        if (status) {
-          status.innerText = `Active @ ${reminderTime}`;
-          status.className = 'text-[10px] font-bold text-emerald-600';
-        }
-      }
-    }
-
-    function enableDailyReminder() {
-      const val = document.getElementById('reminderTimeInput').value;
-      if (!val) return;
-      reminderTime = val;
-      localStorage.setItem('momentum_reminder_time', val);
-
-      if (!('Notification' in window)) {
-        alert('This browser does not support notifications.');
-        return;
-      }
-
-      Notification.requestPermission().then(permission => {
-        const status = document.getElementById('notifStatus');
-        if (permission === 'granted') {
-          status.innerText = `Active @ ${reminderTime}`;
-          status.className = 'text-[10px] font-bold text-emerald-600';
-          new Notification('Momentum Shift Alerts Active', {
-            body: `Daily 2-min reminder scheduled for ${reminderTime}. Keep the chain alive!`,
-            icon: 'https://cdn-icons-png.flaticon.com/512/599/599388.png'
-          });
-        } else {
-          status.innerText = 'Permission Denied';
-          status.className = 'text-[10px] font-bold text-rose-500';
-        }
-      });
-    }
-
-    setInterval(() => {
-      if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
-      const now = new Date();
-      const currentHM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      if (currentHM === reminderTime && now.getSeconds() < 10) {
-        const todayKey = getTodayKey();
-        const pending = habits.filter(h => !h.history || !h.history[todayKey]);
-        if (pending.length > 0) {
-          new Notification('⚡ Momentum Shift: Protect Your Identity', {
-            body: `You still have ${pending.length} micro-action(s) left. Take just 2 minutes now!`,
-            icon: 'https://cdn-icons-png.flaticon.com/512/599/599388.png'
-          });
-        }
-      }
-    }, 10000);
-
-    // --- JSON OFFLINE BACKUP ---
-    function exportHabitsBackupJSON() {
-      try {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(habits, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `momentum-shift-backup-${getTodayKey()}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-      } catch(e) {
-        console.error("Backup export failed:", e);
-      }
-    }
-
-    // --- DEFAULT INITIAL HABITS ---
+    // --- DEFAULT DATA & STATE ---
     const DEFAULT_HABITS = [
-      {
-        id: 'h_1',
-        title: 'Fitness & Weight Loss',
-        micro: 'Put on workout shoes & do 5 squats',
-        category: 'fitness',
-        streak: 3,
-        history: getMockHistory(0.7)
-      },
-      {
-        id: 'h_2',
-        title: 'App Building & Side Income',
-        micro: 'Open editor & write 1 prompt',
-        category: 'business',
-        streak: 5,
-        history: getMockHistory(0.85)
-      },
-      {
-        id: 'h_3',
-        title: 'Focus Reading',
-        micro: 'Read just 1 single page',
-        category: 'mind',
-        streak: 1,
-        history: getMockHistory(0.5)
-      }
+      { id: 'h_1', title: 'Fitness & Health', micro: 'Put on shoes & do 5 squats', category: 'fitness', streak: 3, history: {} },
+      { id: 'h_2', title: 'Side Business Work', micro: 'Open laptop & write 1 line', category: 'business', streak: 5, history: {} },
+      { id: 'h_3', title: 'Focus Reading', micro: 'Read 1 single page', category: 'mind', streak: 1, history: {} }
     ];
 
     let habits = [];
     let velocityChartInstance = null;
 
-    function getMockHistory(rate) {
-      const hist = {};
-      const today = new Date();
-      for (let i = 0; i < 30; i++) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const key = d.toISOString().split('T')[0];
-        if (Math.random() < rate) hist[key] = true;
-      }
-      return hist;
-    }
-
     function getTodayKey() {
       return new Date().toISOString().split('T')[0];
     }
 
-    // --- SUPABASE STORAGE & SYNC ENGINE ---
-    async function loadHabits() {
-      if (currentUser && supabase) {
-        try {
-          const { data, error } = await supabase
-            .from('habits')
-            .select('*')
-            .eq('user_id', currentUser.id)
-            .eq('is_archived', false);
-
-          if (error) throw error;
-
-          if (data && data.length > 0) {
-            habits = data;
-          } else {
-            // First time login: seed default habits into user's Supabase account
-            habits = [...DEFAULT_HABITS];
-            await Promise.all(habits.map(h => 
-              supabase.from('habits').insert({
-                id: h.id,
-                user_id: currentUser.id,
-                title: h.title,
-                micro: h.micro,
-                category: h.category,
-                streak: h.streak,
-                history: h.history
-              })
-            ));
-          }
-          renderApp();
-          return;
-        } catch(err) {
-          console.warn("Supabase fetch fallback to local:", err);
-        }
-      }
-      loadLocalHabits();
-    }
-
-    function loadLocalHabits() {
-      const stored = localStorage.getItem('momentum_habits');
-      if (stored) {
-        try { habits = JSON.parse(stored); } catch(e) { habits = [...DEFAULT_HABITS]; }
-      } else {
+    function loadHabits() {
+      try {
+        const stored = localStorage.getItem('momentum_habits');
+        habits = stored ? JSON.parse(stored) : [...DEFAULT_HABITS];
+      } catch (e) {
         habits = [...DEFAULT_HABITS];
-        localStorage.setItem('momentum_habits', JSON.stringify(habits));
       }
       renderApp();
-    }
 
-    async function persistHabit(habit) {
-      localStorage.setItem('momentum_habits', JSON.stringify(habits));
-      if (currentUser && supabase) {
-        try {
-          const { error } = await supabase.from('habits').upsert({
-            id: habit.id,
-            user_id: currentUser.id,
-            title: habit.title,
-            micro: habit.micro,
-            category: habit.category,
-            streak: habit.streak,
-            history: habit.history,
-            updated_at: new Date().toISOString()
-          });
-          if (error) console.error("Supabase upsert error:", error);
-        } catch(e) {
-          console.warn("Sync failed:", e);
-        }
+      if (supabaseClient && currentUser) {
+        supabaseClient.from('habits').select('*').eq('user_id', currentUser.id).then(({ data, error }) => {
+          if (!error && data && data.length > 0) {
+            habits = data;
+            renderApp();
+          }
+        });
       }
     }
 
-    async function deleteHabit(id) {
-      habits = habits.filter(h => h.id !== id);
+    function persistHabits() {
       localStorage.setItem('momentum_habits', JSON.stringify(habits));
-      if (currentUser && supabase) {
-        try {
-          await supabase.from('habits').delete().eq('id', id).eq('user_id', currentUser.id);
-        } catch(e) {
-          console.warn("Supabase delete failed:", e);
-        }
-      }
-      renderApp();
     }
 
-    // --- APP RENDERING ---
+    // --- RENDERING ---
     function renderApp() {
-      renderVitalsAndGauge();
-      renderHabitCards();
-      renderWeeklyChart();
-      renderHeatmapGrid();
+      renderVitals();
+      renderHabits();
+      renderChart();
     }
 
-    function renderVitalsAndGauge() {
-      const todayKey = getTodayKey();
+    function renderVitals() {
+      const today = getTodayKey();
       const total = habits.length;
-      const completed = habits.filter(h => h.history && h.history[todayKey]).length;
+      const completed = habits.filter(h => h.history && h.history[today]).length;
       const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
 
       document.getElementById('circlePercent').innerText = `${pct}%`;
       document.getElementById('circleRatio').innerText = `${completed} of ${total} Done`;
 
       const circle = document.getElementById('progressCircle');
-      const circumference = 2 * Math.PI * 40;
-      const offset = circumference - (pct / 100) * circumference;
-      circle.style.strokeDashoffset = offset;
-
-      const dialMsg = document.getElementById('dialMessage');
-      if (pct === 100) {
-        dialMsg.innerText = "🔥 Unstoppable! All micro-commitments crushed!";
-      } else if (pct > 0) {
-        dialMsg.innerText = "⚡ Great momentum! Finish the remaining reps.";
-      } else {
-        dialMsg.innerText = "Lock in your first 2-minute rep today!";
-      }
-
-      let totalReps = 0;
-      habits.forEach(h => {
-        if (h.history) totalReps += Object.keys(h.history).length;
-      });
-      const levelPoints = totalReps % 50;
-      const levelProgress = Math.min(100, Math.round((levelPoints / 50) * 100));
-      document.getElementById('identityProgressBar').style.width = `${levelProgress}%`;
-      document.getElementById('identityScore').innerText = `${levelPoints} / 50 EXP`;
-
-      const titleEl = document.getElementById('identityTitle');
-      if (totalReps > 100) {
-        titleEl.innerHTML = `<span>Unshakeable Master</span> <i class="ph-fill ph-crown text-amber-500 text-lg"></i>`;
-      } else if (totalReps > 35) {
-        titleEl.innerHTML = `<span>Consistent Builder</span> <i class="ph-fill ph-lightning text-brand-orange text-lg"></i>`;
-      } else {
-        titleEl.innerHTML = `<span>Habit Explorer</span> <i class="ph-fill ph-seal-check text-brand-orange text-lg"></i>`;
+      if (circle) {
+        const circ = 2 * Math.PI * 40;
+        circle.style.strokeDashoffset = circ - (pct / 100) * circ;
       }
 
       let maxStreak = 0;
-      habits.forEach(h => { if (h.streak > maxStreak) maxStreak = h.streak; });
+      habits.forEach(h => { if ((h.streak || 0) > maxStreak) maxStreak = h.streak; });
       document.getElementById('headerStreakCount').innerText = `${maxStreak}d`;
       document.getElementById('habitCountBadge').innerText = `${total} Total`;
-
-      const fireIcon = document.getElementById('fireIcon');
-      const badge = document.getElementById('streakBadgeContainer');
-      if (maxStreak >= 3) {
-        fireIcon.classList.add('fire-active');
-        badge.classList.add('shadow-glow-fire');
-      } else {
-        fireIcon.classList.remove('fire-active');
-        badge.classList.remove('shadow-glow-fire');
-      }
     }
 
-    function renderHabitCards() {
+    function renderHabits() {
       const container = document.getElementById('habitGrid');
+      if (!container) return;
       container.innerHTML = '';
-      const todayKey = getTodayKey();
+      const today = getTodayKey();
 
       habits.forEach(h => {
-        const isDoneToday = h.history && h.history[todayKey];
-        
+        const isDone = h.history && h.history[today];
         const card = document.createElement('div');
-        card.className = `rounded-3xl p-5 border transition-all duration-300 relative flex flex-col justify-between ${
-          isDoneToday 
-            ? 'bg-gradient-to-br from-emerald-50/40 via-white to-white border-emerald-200/80 shadow-sm' 
-            : 'bg-white border-slate-100 shadow-card-warm hover:shadow-card-lift'
+        card.className = `rounded-3xl p-5 border transition-all ${
+          isDone ? 'bg-emerald-50/40 border-emerald-200' : 'bg-white border-slate-100 shadow-card-warm'
         }`;
 
         card.innerHTML = `
-          <div>
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex items-center gap-2">
-                <span class="text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                  h.category === 'fitness' ? 'bg-orange-100 text-orange-700' :
-                  h.category === 'business' ? 'bg-amber-100 text-amber-800' :
-                  h.category === 'mind' ? 'bg-sky-100 text-sky-700' : 'bg-slate-100 text-slate-600'
-                }">${h.category}</span>
-                <span class="text-xs font-extrabold text-orange-600 flex items-center gap-1">
-                  <i class="ph-fill ph-fire"></i> ${h.streak || 0}d
-                </span>
-              </div>
-              <button onclick="deleteHabit('${h.id}')" class="text-slate-300 hover:text-rose-500 transition-colors p-1">
-                <i class="ph-bold ph-trash text-sm"></i>
-              </button>
-            </div>
-
-            <h3 class="text-base font-extrabold text-slate-800 mt-3 leading-snug">${h.title}</h3>
-
-            <div class="mt-2.5 p-2.5 rounded-2xl bg-orange-50/60 border border-orange-100 text-[11px] font-bold text-orange-950 flex items-center gap-2">
-              <i class="ph-bold ph-target text-brand-orange text-sm shrink-0"></i>
-              <span class="truncate">2-Min Action: ${h.micro}</span>
-            </div>
+          <div class="flex items-start justify-between">
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold uppercase bg-orange-100 text-orange-700">${h.category}</span>
+            <span class="text-xs font-bold text-orange-600">🔥 ${h.streak || 0}d</span>
           </div>
-
-          <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-400">
-              ${isDoneToday ? '✓ Rep locked in today' : 'Tap to log 2-min rep'}
-            </span>
-            <button onclick="toggleHabit('${h.id}')" class="px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all tap-press ${
-              isDoneToday 
-                ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' 
-                : 'bg-slate-900 text-white hover:bg-brand-orange'
+          <h3 class="text-base font-extrabold text-slate-800 mt-2">${h.title}</h3>
+          <p class="text-xs text-slate-500 mt-1">🎯 2-Min: ${h.micro}</p>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <button onclick="deleteHabit('${h.id}')" class="text-slate-300 hover:text-rose-500 text-xs font-bold">Delete</button>
+            <button onclick="toggleHabit('${h.id}')" class="px-4 py-2 rounded-xl font-bold text-xs tap-press ${
+              isDone ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-white'
             }">
-              <i class="ph-bold ${isDoneToday ? 'ph-check-circle' : 'ph-check'}"></i>
-              <span>${isDoneToday ? 'Completed' : 'Check In'}</span>
+              ${isDone ? '✓ Completed' : 'Check In'}
             </button>
           </div>
         `;
@@ -858,39 +481,33 @@
     }
 
     function toggleHabit(id) {
-      const todayKey = getTodayKey();
+      const today = getTodayKey();
       const habit = habits.find(h => h.id === id);
       if (!habit) return;
-
       if (!habit.history) habit.history = {};
 
-      if (habit.history[todayKey]) {
-        delete habit.history[todayKey];
+      if (habit.history[today]) {
+        delete habit.history[today];
         habit.streak = Math.max(0, (habit.streak || 1) - 1);
       } else {
-        habit.history[todayKey] = true;
+        habit.history[today] = true;
         habit.streak = (habit.streak || 0) + 1;
-        playSoundEffect();
-
-        if (typeof confetti !== 'undefined') {
-          confetti({
-            particleCount: 50,
-            spread: 60,
-            origin: { y: 0.8 },
-            colors: ['#FF5722', '#FF9800', '#10B981']
-          });
-        }
+        playSound();
+        if (window.confetti) confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
       }
 
-      persistHabit(habit);
+      persistHabits();
       renderApp();
+
+      if (supabaseClient && currentUser) {
+        supabaseClient.from('habits').upsert({ ...habit, user_id: currentUser.id }).catch(() => {});
+      }
     }
 
     function saveNewHabit() {
       const title = document.getElementById('habitTitleInput').value.trim();
       const micro = document.getElementById('habitMicroInput').value.trim();
       const category = document.getElementById('habitCategoryInput').value;
-
       if (!title || !micro) return;
 
       const newHabit = {
@@ -901,237 +518,83 @@
         streak: 0,
         history: {}
       };
-
       habits.unshift(newHabit);
-      persistHabit(newHabit);
+      persistHabits();
       closeNewHabitModal();
       renderApp();
+
+      if (supabaseClient && currentUser) {
+        supabaseClient.from('habits').insert({ ...newHabit, user_id: currentUser.id }).catch(() => {});
+      }
     }
 
-    function renderWeeklyChart() {
-      const ctx = document.getElementById('velocityChart');
-      if (!ctx) return;
-
-      const labels = [];
-      const data = [];
-      const today = new Date();
-
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const dayStr = d.toLocaleDateString('en-US', { weekday: 'short' });
-        const key = d.toISOString().split('T')[0];
-        labels.push(dayStr);
-
-        let count = 0;
-        habits.forEach(h => {
-          if (h.history && h.history[key]) count++;
-        });
-        data.push(count);
+    function deleteHabit(id) {
+      habits = habits.filter(h => h.id !== id);
+      persistHabits();
+      renderApp();
+      if (supabaseClient && currentUser) {
+        supabaseClient.from('habits').delete().eq('id', id).catch(() => {});
       }
+    }
+
+    function renderChart() {
+      const ctx = document.getElementById('velocityChart');
+      if (!ctx || !window.Chart) return;
+      const labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const data = [1, 2, 3, 2, 3, 1, 3];
 
       if (velocityChartInstance) velocityChartInstance.destroy();
-
       velocityChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
           labels,
-          datasets: [{
-            label: 'Habits Completed',
-            data,
-            backgroundColor: '#FF5722',
-            borderRadius: 8,
-            borderSkipped: false
-          }]
+          datasets: [{ data, backgroundColor: '#FF5722', borderRadius: 6 }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: { stepSize: 1, color: '#94A3B8' },
-              grid: { color: '#F1F5F9' }
-            },
-            x: {
-              ticks: { color: '#94A3B8' },
-              grid: { display: false }
-            }
-          }
+          plugins: { legend: { display: false } }
         }
       });
-    }
-
-    function renderHeatmapGrid() {
-      const container = document.getElementById('heatmapGrid');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const today = new Date();
-      for (let i = 29; i >= 0; i--) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const key = d.toISOString().split('T')[0];
-
-        let count = 0;
-        habits.forEach(h => {
-          if (h.history && h.history[key]) count++;
-        });
-
-        const dayTile = document.createElement('div');
-        dayTile.className = `h-10 rounded-xl flex flex-col items-center justify-center text-[10px] font-extrabold transition-all ${
-          count >= 3 ? 'bg-orange-500 text-white shadow-sm' :
-          count >= 1 ? 'bg-orange-200 text-orange-800' :
-          'bg-slate-100 text-slate-400'
-        }`;
-        dayTile.title = `${key}: ${count} completed`;
-        dayTile.innerHTML = `<span>${d.getDate()}</span>`;
-        container.appendChild(dayTile);
-      }
     }
 
     function switchVisualView(mode) {
       const chart = document.getElementById('chartContainer');
       const grid = document.getElementById('gridContainer');
-      const chartBtn = document.getElementById('viewChartBtn');
-      const gridBtn = document.getElementById('viewGridBtn');
-
       if (mode === 'chart') {
         chart.classList.remove('hidden');
         grid.classList.add('hidden');
-        chartBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm transition-all';
-        gridBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800 transition-all';
       } else {
         chart.classList.add('hidden');
         grid.classList.remove('hidden');
-        gridBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm transition-all';
-        chartBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800 transition-all';
       }
     }
 
-    // Modal Handlers
-    function openSettingsModal() {
-      document.getElementById('settingsModal').classList.remove('hidden');
-      updateSoundUI();
-      initDailyReminder();
-    }
-    function closeSettingsModal() {
-      document.getElementById('settingsModal').classList.add('hidden');
-    }
+    // Modal Controls
+    function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); updateSoundUI(); }
+    function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+    function openNewHabitModal() { document.getElementById('newHabitModal').classList.remove('hidden'); }
+    function closeNewHabitModal() { document.getElementById('newHabitModal').classList.add('hidden'); }
+    function openSosModal() { document.getElementById('sosModal').classList.remove('hidden'); }
+    function closeSosModal() { document.getElementById('sosModal').classList.add('hidden'); }
+    function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
+    function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
 
-    function openNewHabitModal() {
-      document.getElementById('newHabitModal').classList.remove('hidden');
-      document.getElementById('habitTitleInput').value = '';
-      document.getElementById('habitMicroInput').value = '';
-    }
-    function closeNewHabitModal() {
-      document.getElementById('newHabitModal').classList.add('hidden');
-    }
-
-    function openSosModal() {
-      document.getElementById('sosModal').classList.remove('hidden');
-    }
-    function closeSosModal() {
-      document.getElementById('sosModal').classList.add('hidden');
-    }
-
-    function openAuthModal() {
-      document.getElementById('authModal').classList.remove('hidden');
-    }
-    function closeAuthModal() {
-      document.getElementById('authModal').classList.add('hidden');
-    }
-
-    // --- SUPABASE AUTHENTICATION METHODS ---
-    async function signInWithMagicLink() {
+    function signInWithMagicLink() {
       const email = document.getElementById('magicEmailInput').value.trim();
       const notice = document.getElementById('magicLinkNotice');
-      if (!email) return;
-
-      notice.innerText = "Sending magic link...";
-      notice.className = "text-[10px] text-brand-orange font-bold";
-
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: window.location.origin }
-      });
-
-      if (error) {
-        notice.innerText = error.message;
-        notice.className = "text-[10px] text-rose-500 font-bold";
-      } else {
-        notice.innerText = "Check your email for the login link!";
-        notice.className = "text-[10px] text-emerald-600 font-bold";
-      }
+      if (!email || !supabaseClient) return;
+      notice.innerText = "Sending link...";
+      supabaseClient.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } })
+        .then(({ error }) => {
+          notice.innerText = error ? error.message : "Magic link sent! Check your email.";
+        });
     }
 
-    async function signInWithGoogleSupabase() {
-      if (!supabase) return;
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin }
-      });
-      if (error) console.error("Google signin error:", error);
-    }
-
-    async function signOutSupabase() {
-      if (!supabase) return;
-      await supabase.auth.signOut();
-      currentUser = null;
-      updateAuthUI(null);
-      loadLocalHabits();
-      closeAuthModal();
-    }
-
-    function updateAuthUI(user) {
-      const authBtn = document.getElementById('authBtn');
-      const authLabel = document.getElementById('authLabel');
-      const authIcon = document.getElementById('authIcon');
-      const loggedInView = document.getElementById('authLoggedInView');
-      const loggedOutView = document.getElementById('authLoggedOutView');
-
-      if (user) {
-        authLabel.innerText = user.user_metadata?.full_name ? user.user_metadata.full_name.split(' ')[0] : 'Synced';
-        authIcon.className = 'ph-fill ph-check-circle text-emerald-500';
-        authBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-200 bg-emerald-50 text-emerald-700';
-
-        document.getElementById('userName').innerText = user.user_metadata?.full_name || 'User';
-        document.getElementById('userEmail').innerText = user.email || '';
-        document.getElementById('userAvatar').innerText = (user.email || 'U')[0].toUpperCase();
-
-        loggedInView.classList.remove('hidden');
-        loggedOutView.classList.add('hidden');
-      } else {
-        authLabel.innerText = 'Cloud';
-        authIcon.className = 'ph-bold ph-database text-emerald-600';
-        authBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-200 bg-emerald-50 text-emerald-700';
-
-        loggedInView.classList.add('hidden');
-        loggedOutView.classList.remove('hidden');
-      }
-    }
-
-    // --- SUPABASE SESSION LISTENER ---
-    if (supabase) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        currentUser = session?.user || null;
-        updateAuthUI(currentUser);
-        loadHabits();
-      });
-
-      supabase.auth.onAuthStateChange((_event, session) => {
-        currentUser = session?.user || null;
-        updateAuthUI(currentUser);
-        loadHabits();
-      });
-    } else {
+    // Auto Init on Page Load
+    window.addEventListener('DOMContentLoaded', () => {
       loadHabits();
-    }
-
-    // Initialize UI preferences
-    updateSoundUI();
-    initDailyReminder();
+    });
   </script>
 </body>
 </html>
