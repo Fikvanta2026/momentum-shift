@@ -4,6 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Momentum Shift • Visual Consistency Engine</title>
+  <!-- PWA Mobile App Support -->
+  <meta name="theme-color" content="#FF5722">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Momentum Shift">
+  <link id="pwaManifest" rel="manifest">
+  <script>
+    (function() {
+      const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF5722"/><stop offset="100%" stop-color="#FF9800"/></linearGradient></defs><rect width="512" height="512" rx="112" fill="url(#g)"/><path d="M294 84L142 286h112l-36 142 152-202H258l36-142z" fill="#FFFFFF"/></svg>`;
+      const iconUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
+      const manifest = {
+        name: "Momentum Shift • Visual Consistency Engine",
+        short_name: "Momentum",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#F8FAFC",
+        theme_color: "#FF5722",
+        icons: [
+          { src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+          { src: iconUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+        ]
+      };
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+      document.getElementById('pwaManifest').setAttribute('href', URL.createObjectURL(blob));
+    })();
+  </script>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1323,6 +1349,31 @@
       }
       loadHabits();
     });
+    loadHabits();
+    });
+
+    // --- PWA INSTALL PROMPT ---
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const headerRight = document.querySelector('header .flex.items-center.gap-2.shrink-0');
+      if (headerRight && !document.getElementById('pwaInstallBtn')) {
+        const btn = document.createElement('button');
+        btn.id = 'pwaInstallBtn';
+        btn.className = 'flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-slate-900 text-white font-bold text-[11px] shadow-sm tap-press';
+        btn.innerHTML = '<i class="ph-bold ph-device-mobile text-xs text-brand-amber"></i><span>Install</span>';
+        btn.onclick = async () => {
+          if (!deferredPrompt) return;
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          btn.remove();
+        };
+        headerRight.prepend(btn);
+      }
+    });
+  </script>
   </script>
 </body>
 </html>
