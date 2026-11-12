@@ -83,6 +83,12 @@
           <span>Pro</span>
         </button>
 
+        <!-- Certificate Button -->
+        <button onclick="openCertificateModal()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-700 hover:bg-amber-100 font-bold text-xs tap-press transition-all" title="30-Day Consistency Certificate">
+          <i class="ph-fill ph-trophy text-amber-500 text-sm"></i>
+          <span class="hidden sm:inline">Certificate</span>
+        </button>
+
         <div id="streakBadgeContainer" class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-orange-50 border border-orange-100/80 text-orange-600 font-bold text-xs transition-all">
           <i id="fireIcon" class="ph-fill ph-fire text-orange-500 text-sm"></i>
           <span id="headerStreakCount">0d</span>
@@ -184,7 +190,7 @@
       </div>
     </section>
 
-    <!-- 30-DAY CHALLENGE PROMO BANNER -->
+    <!-- 30-DAY CHALLENGE & CERTIFICATE BANNER -->
     <section id="challengeBanner" class="rounded-3xl p-5 sm:p-6 bg-slate-900 text-white shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden">
       <div class="absolute -right-8 -top-8 w-40 h-40 bg-brand-orange/20 rounded-full blur-2xl pointer-events-none"></div>
       <div class="space-y-1 relative z-10">
@@ -192,12 +198,17 @@
           <i class="ph-fill ph-trophy"></i>
           <span>30-Day Consistency Sprint</span>
         </div>
-        <h2 class="text-lg sm:text-xl font-extrabold tracking-tight">Build an Unbreakable Habit in 30 Days</h2>
-        <p class="text-xs text-slate-300 max-w-xl">Join the guided 30-day execution challenge. Complete 25+ days to earn your verified Digital Consistency Certificate.</p>
+        <h2 class="text-lg sm:text-xl font-extrabold tracking-tight">Earn Your Verified Consistency Certificate</h2>
+        <p class="text-xs text-slate-300 max-w-xl">Track your daily check-ins and generate your official Momentum Shift Consistency Certificate anytime.</p>
       </div>
-      <button onclick="openPricingModal('challenge')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-orange to-brand-amber text-white font-extrabold text-xs shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 tap-press transition-all shrink-0 relative z-10">
-        Join Challenge (₹149)
-      </button>
+      <div class="flex items-center gap-2 shrink-0 relative z-10">
+        <button onclick="openCertificateModal()" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white font-bold text-xs tap-press transition-all">
+          Preview Certificate
+        </button>
+        <button onclick="openPricingModal('challenge')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-orange to-brand-amber text-white font-extrabold text-xs shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 tap-press transition-all">
+          Join Sprint (₹149)
+        </button>
+      </div>
     </section>
 
     <!-- HABITS LIST -->
@@ -223,13 +234,20 @@
           <p class="text-xs text-slate-400">Visual proof of non-stop daily compounding</p>
         </div>
 
-        <div class="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 self-start sm:self-auto">
-          <button id="viewChartBtn" onclick="switchVisualView('chart')" class="px-3 py-1 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm transition-all">
-            7-Day Chart
+        <div class="flex items-center gap-2 self-start sm:self-auto">
+          <button onclick="openCertificateModal()" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold flex items-center gap-1.5 tap-press transition-all">
+            <i class="ph-fill ph-certificate text-amber-600 text-sm"></i>
+            <span>Get Certificate</span>
           </button>
-          <button id="viewGridBtn" onclick="switchVisualView('grid')" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800 transition-all">
-            30-Day Matrix
-          </button>
+
+          <div class="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100">
+            <button id="viewChartBtn" onclick="switchVisualView('chart')" class="px-3 py-1 rounded-lg text-xs font-bold bg-white text-slate-800 shadow-sm transition-all">
+              7-Day Chart
+            </button>
+            <button id="viewGridBtn" onclick="switchVisualView('grid')" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800 transition-all">
+              30-Day Matrix
+            </button>
+          </div>
         </div>
       </div>
 
@@ -254,13 +272,64 @@
       <i class="ph-bold ph-plus text-2xl"></i>
     </button>
 
-    <button onclick="openPricingModal('nav')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-600">
-      <i class="ph-bold ph-crown text-xl text-amber-500"></i>
-      <span class="text-[10px] font-bold">Pro Plans</span>
+    <button onclick="openCertificateModal()" class="flex flex-col items-center gap-1 text-slate-500 hover:text-amber-600">
+      <i class="ph-fill ph-trophy text-xl text-amber-500"></i>
+      <span class="text-[10px] font-bold">Certificate</span>
     </button>
   </nav>
 
   <!-- MODALS -->
+
+  <!-- 0. 30-DAY CONSISTENCY CERTIFICATE MODAL -->
+  <div id="certificateModal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl p-5 sm:p-8 max-w-3xl w-full shadow-2xl border border-slate-100 space-y-5 my-auto">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-extrabold uppercase tracking-wider mb-1">
+            <i class="ph-fill ph-seal-check text-amber-500"></i>
+            <span>Verified Proof of Consistency</span>
+          </div>
+          <h3 class="text-xl font-black text-slate-900 tracking-tight">Consistency Achievement Certificate</h3>
+        </div>
+        <button onclick="closeCertificateModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i class="ph-bold ph-x text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Customization Inputs -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Recipient Full Name</label>
+          <input type="text" id="certNameInput" oninput="renderCertificateCanvas()" placeholder="Enter your name" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500/30" />
+        </div>
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Primary Habit Focus</label>
+          <input type="text" id="certHabitInput" oninput="renderCertificateCanvas()" placeholder="e.g. Daily Micro-Habit Execution" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500/30" />
+        </div>
+      </div>
+
+      <!-- High-Res Canvas Preview -->
+      <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-inner bg-slate-100 flex items-center justify-center">
+        <canvas id="certificateCanvas" width="1200" height="800" class="w-full h-auto block"></canvas>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+        <p class="text-[11px] font-semibold text-slate-400">
+          Generated from live Momentum Shift check-in metrics.
+        </p>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button onclick="closeCertificateModal()" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50">
+            Close
+          </button>
+          <button onclick="downloadCertificatePNG()" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-orange to-brand-amber text-white font-extrabold text-xs shadow-md shadow-orange-500/25 flex items-center justify-center gap-1.5 tap-press">
+            <i class="ph-bold ph-download-simple text-sm"></i>
+            <span>Download PNG</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- 1. PRICING & PAYWALL MODAL -->
   <div id="pricingModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
@@ -272,7 +341,7 @@
             <span>Free Limit Reached (3/3 Habits Used)</span>
           </div>
           <h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Upgrade to Momentum Pro</h3>
-          <p class="text-xs text-slate-500 mt-1">Unlock unlimited micro-habits, cloud backup exports, and full consistency analytics.</p>
+          <p class="text-xs text-slate-500 mt-1">Unlock unlimited micro-habits, cloud backup exports, and verified certificates.</p>
         </div>
         <button onclick="closePricingModal()" class="text-slate-400 hover:text-slate-600 p-1">
           <i class="ph-bold ph-x text-xl"></i>
@@ -319,7 +388,7 @@
             <ul class="mt-4 space-y-2 text-xs text-slate-700 font-semibold">
               <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-brand-orange"></i> Everything in Monthly</li>
               <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-brand-orange"></i> Priority Cloud Backup</li>
-              <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-brand-orange"></i> All Audio Soundscapes</li>
+              <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-brand-orange"></i> Verified Pro Certificate</li>
             </ul>
           </div>
           <button onclick="initiateCheckout('yearly')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-orange to-brand-amber text-white font-extrabold text-xs shadow-md shadow-orange-500/25 tap-press transition-all">
@@ -424,7 +493,7 @@
     </div>
   </div>
 
-  <!-- 4. AUTH MODAL (WITH GOOGLE ONE-CLICK LOGIN) -->
+  <!-- 4. AUTH MODAL -->
   <div id="authModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-slate-100 space-y-5 text-center">
       <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-2xl">
@@ -594,7 +663,6 @@
       const badge = document.getElementById('tierBadge');
       const modalTag = document.getElementById('modalTierTag');
       const upgradeBtn = document.getElementById('headerUpgradeBtn');
-      const challengeBanner = document.getElementById('challengeBanner');
 
       if (userTier === 'pro') {
         if (badge) {
@@ -603,7 +671,6 @@
         }
         if (modalTag) modalTag.innerText = 'PRO';
         if (upgradeBtn) upgradeBtn.classList.add('hidden');
-        if (challengeBanner) challengeBanner.classList.add('hidden');
       } else {
         if (badge) {
           badge.innerText = 'FREE';
@@ -611,7 +678,6 @@
         }
         if (modalTag) modalTag.innerText = 'FREE';
         if (upgradeBtn) upgradeBtn.classList.remove('hidden');
-        if (challengeBanner) challengeBanner.classList.remove('hidden');
       }
       renderVitals();
     }
@@ -690,8 +756,14 @@
       }
 
       let maxStreak = 0;
-      habits.forEach(h => { if ((h.streak || 0) > maxStreak) maxStreak = h.streak; });
+      let totalReps = 0;
+      habits.forEach(h => {
+        if ((h.streak || 0) > maxStreak) maxStreak = h.streak;
+        if (h.history) totalReps += Object.keys(h.history).length;
+      });
       document.getElementById('headerStreakCount').innerText = `${maxStreak}d`;
+      document.getElementById('identityScore').innerText = `${totalReps * 10} / 50`;
+      document.getElementById('identityProgressBar').style.width = `${Math.min(100, totalReps * 20)}%`;
 
       const limitIndicator = document.getElementById('habitLimitIndicator');
       if (limitIndicator) {
@@ -863,6 +935,172 @@
         chart.classList.add('hidden');
         grid.classList.remove('hidden');
       }
+    }
+
+    // --- 30-DAY CONSISTENCY CERTIFICATE ENGINE ---
+    function openCertificateModal() {
+      const nameInput = document.getElementById('certNameInput');
+      const habitInput = document.getElementById('certHabitInput');
+
+      if (!nameInput.value && currentUser && currentUser.email) {
+        const defaultName = currentUser.email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        nameInput.value = defaultName;
+      } else if (!nameInput.value) {
+        nameInput.value = "Momentum Achiever";
+      }
+
+      if (!habitInput.value) {
+        habitInput.value = habits.length > 0 ? habits[0].title : "Daily Micro-Habit Consistency";
+      }
+
+      document.getElementById('certificateModal').classList.remove('hidden');
+      renderCertificateCanvas();
+    }
+
+    function closeCertificateModal() {
+      document.getElementById('certificateModal').classList.add('hidden');
+    }
+
+    function renderCertificateCanvas() {
+      const canvas = document.getElementById('certificateCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      const recipientName = (document.getElementById('certNameInput').value || "Momentum Achiever").trim();
+      const habitFocus = (document.getElementById('certHabitInput').value || "Daily Consistency Protocol").trim();
+
+      let maxStreak = 0;
+      let totalReps = 0;
+      habits.forEach(item => {
+        if ((item.streak || 0) > maxStreak) maxStreak = item.streak;
+        if (item.history) totalReps += Object.keys(item.history).length;
+      });
+
+      // Background Dark Slate & Warm Glow
+      const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+      bgGrad.addColorStop(0, '#0F172A');
+      bgGrad.addColorStop(1, '#1E293B');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Subtle Ambient Glow
+      const radial = ctx.createRadialGradient(w * 0.85, h * 0.15, 20, w * 0.85, h * 0.15, 420);
+      radial.addColorStop(0, 'rgba(255, 87, 34, 0.22)');
+      radial.addColorStop(1, 'rgba(255, 87, 34, 0)');
+      ctx.fillStyle = radial;
+      ctx.fillRect(0, 0, w, h);
+
+      // Outer Gold/Orange Border Frame
+      ctx.strokeStyle = '#FF9800';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(36, 36, w - 72, h - 72);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(52, 52, w - 104, h - 104);
+
+      // Top Brand Header
+      ctx.fillStyle = '#FF9800';
+      ctx.font = '800 20px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('MOMENTUM SHIFT OS • IDENTITY PROTOCOL', w / 2, 120);
+
+      // Main Certificate Title
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 52px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('CERTIFICATE OF CONSISTENCY', w / 2, 195);
+
+      // Divider Line
+      const lineGrad = ctx.createLinearGradient(w / 2 - 180, 0, w / 2 + 180, 0);
+      lineGrad.addColorStop(0, 'rgba(255,87,34,0)');
+      lineGrad.addColorStop(0.5, '#FF5722');
+      lineGrad.addColorStop(1, 'rgba(255,87,34,0)');
+      ctx.fillStyle = lineGrad;
+      ctx.fillRect(w / 2 - 180, 222, 360, 4);
+
+      // Subtitle
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '500 22px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('This official credential is proudly awarded to', w / 2, 285);
+
+      // Recipient Name
+      ctx.fillStyle = '#FBBF24';
+      ctx.font = '800 58px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(recipientName, w / 2, 365);
+
+      // Achievement Description
+      ctx.fillStyle = '#E2E8F0';
+      ctx.font = '500 22px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('For demonstrating disciplined daily execution & habit mastery in:', w / 2, 435);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 28px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`“${habitFocus}”`, w / 2, 482);
+
+      // Metrics Boxes
+      const boxY = 535;
+      const boxH = 95;
+      const boxW = 240;
+
+      // Box 1: Peak Streak
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+      ctx.fillRect(w / 2 - 390, boxY, boxW, boxH);
+      ctx.fillStyle = '#FF5722';
+      ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`${maxStreak} DAYS`, w / 2 - 270, boxY + 46);
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '700 13px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('PEAK ACTIVE STREAK', w / 2 - 270, boxY + 74);
+
+      // Box 2: Total Reps
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+      ctx.fillRect(w / 2 - 120, boxY, boxW, boxH);
+      ctx.fillStyle = '#10B981';
+      ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`${totalReps} REPS`, w / 2, boxY + 46);
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '700 13px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('VERIFIED CHECK-INS', w / 2, boxY + 74);
+
+      // Box 3: Tier Status
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+      ctx.fillRect(w / 2 + 150, boxY, boxW, boxH);
+      ctx.fillStyle = userTier === 'pro' ? '#FBBF24' : '#38BDF8';
+      ctx.font = '800 30px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(userTier === 'pro' ? 'PRO VERIFIED' : 'SPRINT MEMBER', w / 2 + 270, boxY + 46);
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '700 13px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('CREDENTIAL TIER', w / 2 + 270, boxY + 74);
+
+      // Footer Signature & Date
+      const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      const certId = 'MS-' + Math.abs(recipientName.split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0)).toString(16).toUpperCase().slice(0, 6);
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '600 16px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`Issued: ${dateStr}`, 95, 710);
+      ctx.fillText(`Credential ID: ${certId}`, 95, 735);
+
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 18px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('Momentum Shift Engine', w - 95, 710);
+      ctx.fillStyle = '#FF9800';
+      ctx.font = '600 14px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('momentum-shift-phi.vercel.app', w - 95, 735);
+    }
+
+    function downloadCertificatePNG() {
+      const canvas = document.getElementById('certificateCanvas');
+      if (!canvas) return;
+      const link = document.createElement('a');
+      link.download = `Momentum-Shift-Certificate-${getTodayKey()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      if (window.confetti) confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
     }
 
     // --- PRICING & RAZORPAY CHECKOUT ENGINE ---
