@@ -66,30 +66,42 @@
           <i class="ph-bold ph-lightning text-xl"></i>
         </div>
         <div class="flex flex-col min-w-0">
-          <span class="text-lg font-black tracking-tight bg-gradient-to-r from-brand-orange to-brand-amber bg-clip-text text-transparent truncate leading-tight">
-            Momentum
-          </span>
+          <div class="flex items-center gap-1.5">
+            <span class="text-lg font-black tracking-tight bg-gradient-to-r from-brand-orange to-brand-amber bg-clip-text text-transparent truncate leading-tight">
+              Momentum
+            </span>
+            <span id="tierBadge" class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 tracking-wider">FREE</span>
+          </div>
           <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase leading-none hidden sm:inline">Shift OS</span>
         </div>
       </div>
 
       <div class="flex items-center gap-2 shrink-0">
-        <div id="streakBadgeContainer" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-orange-50 border border-orange-100/80 text-orange-600 font-bold text-xs transition-all">
+        <!-- Upgrade / Pricing Pill -->
+        <button id="headerUpgradeBtn" onclick="openPricingModal('header')" class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold text-[11px] shadow-sm hover:shadow tap-press transition-all">
+          <i class="ph-fill ph-crown text-xs"></i>
+          <span>Pro</span>
+        </button>
+
+        <!-- Streak Badge -->
+        <div id="streakBadgeContainer" class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-orange-50 border border-orange-100/80 text-orange-600 font-bold text-xs transition-all">
           <i id="fireIcon" class="ph-fill ph-fire text-orange-500 text-sm"></i>
           <span id="headerStreakCount">0d</span>
-          <span class="hidden sm:inline text-slate-400 font-medium">Streak</span>
         </div>
 
+        <!-- Settings -->
         <button onclick="openSettingsModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 tap-press transition-colors">
           <i class="ph-bold ph-sliders text-sm"></i>
         </button>
 
+        <!-- Auth Status Button -->
         <button id="authBtn" onclick="openAuthModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100">
           <i id="authIcon" class="ph-bold ph-database text-sm"></i>
           <span id="authLabel">Cloud</span>
         </button>
 
-        <button onclick="openNewHabitModal()" class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-brand-orange to-brand-amber text-white font-bold text-xs shadow-md shadow-orange-500/25 hover:shadow-lg tap-press transition-all">
+        <!-- New Habit Desktop -->
+        <button onclick="handleNewHabitClick()" class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-brand-orange to-brand-amber text-white font-bold text-xs shadow-md shadow-orange-500/25 hover:shadow-lg tap-press transition-all">
           <i class="ph-bold ph-plus text-sm"></i>
           <span>New Habit</span>
         </button>
@@ -99,6 +111,8 @@
 
   <!-- MAIN CONTAINER -->
   <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 flex-1 w-full space-y-8">
+    
+    <!-- HERO & VITALS -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
       <div class="lg:col-span-2 rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-white via-orange-50/30 to-amber-50/40 border border-orange-100/80 shadow-card-warm relative overflow-hidden flex flex-col justify-between">
         <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-orange-400/10 rounded-full blur-2xl pointer-events-none"></div>
@@ -144,6 +158,7 @@
         </div>
       </div>
 
+      <!-- Progress Dial -->
       <div class="rounded-3xl p-6 bg-white border border-slate-100 shadow-card-warm flex flex-col items-center justify-center relative">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Today's Execution</h3>
         
@@ -173,6 +188,22 @@
       </div>
     </section>
 
+    <!-- 30-DAY CHALLENGE PROMO BANNER -->
+    <section class="rounded-3xl p-5 sm:p-6 bg-slate-900 text-white shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden">
+      <div class="absolute -right-8 -top-8 w-40 h-40 bg-brand-orange/20 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="space-y-1 relative z-10">
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-300 text-[10px] font-extrabold uppercase tracking-wider">
+          <i class="ph-fill ph-trophy"></i>
+          <span>30-Day Consistency Sprint</span>
+        </div>
+        <h2 class="text-lg sm:text-xl font-extrabold tracking-tight">Build an Unbreakable Habit in 30 Days</h2>
+        <p class="text-xs text-slate-300 max-w-xl">Join the guided 30-day execution challenge. Complete 25+ days to earn your verified Digital Consistency Certificate.</p>
+      </div>
+      <button onclick="openPricingModal('challenge')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-orange to-brand-amber text-white font-extrabold text-xs shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 tap-press transition-all shrink-0 relative z-10">
+        Join Challenge (₹149)
+      </button>
+    </section>
+
     <!-- HABITS LIST -->
     <section class="space-y-4">
       <div class="flex items-center justify-between">
@@ -180,7 +211,9 @@
           <div class="w-2.5 h-6 rounded-full bg-brand-orange"></div>
           <h2 class="text-lg font-extrabold text-slate-900 tracking-tight">Active Micro-Habits</h2>
         </div>
-        <span id="habitCountBadge" class="text-xs font-bold text-slate-400">0 Total</span>
+        <div class="flex items-center gap-2">
+          <span id="habitLimitIndicator" class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">0 / 3 Free Slots</span>
+        </div>
       </div>
 
       <div id="habitGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
@@ -221,21 +254,116 @@
       <span class="text-[10px] font-bold">Today</span>
     </button>
 
-    <button onclick="openNewHabitModal()" class="w-12 h-12 -mt-5 rounded-full bg-gradient-to-tr from-brand-orange to-brand-amber text-white flex items-center justify-center shadow-lg shadow-orange-500/40 tap-press">
+    <button onclick="handleNewHabitClick()" class="w-12 h-12 -mt-5 rounded-full bg-gradient-to-tr from-brand-orange to-brand-amber text-white flex items-center justify-center shadow-lg shadow-orange-500/40 tap-press">
       <i class="ph-bold ph-plus text-2xl"></i>
     </button>
 
-    <button onclick="openSettingsModal()" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700">
-      <i class="ph-bold ph-sliders text-xl"></i>
-      <span class="text-[10px] font-bold">Preferences</span>
+    <button onclick="openPricingModal('nav')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-600">
+      <i class="ph-bold ph-crown text-xl text-amber-500"></i>
+      <span class="text-[10px] font-bold">Pro Plans</span>
     </button>
   </nav>
 
   <!-- MODALS -->
+
+  <!-- 1. PRICING & PAYWALL MODAL -->
+  <div id="pricingModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl border border-slate-100 space-y-6 my-auto">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <div id="paywallAlertBadge" class="hidden inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 text-[11px] font-extrabold mb-2">
+            <i class="ph-bold ph-lock-key"></i>
+            <span>Free Limit Reached (3/3 Habits Used)</span>
+          </div>
+          <h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Upgrade to Momentum Pro</h3>
+          <p class="text-xs text-slate-500 mt-1">Unlock unlimited micro-habits, cloud backup exports, and full consistency analytics.</p>
+        </div>
+        <button onclick="closePricingModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i class="ph-bold ph-x text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Currency Toggle -->
+      <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
+        <span class="text-xs font-bold text-slate-600 pl-2">Select Billing Currency</span>
+        <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200">
+          <button id="currINRBtn" onclick="setCurrency('INR')" class="px-3 py-1 rounded-lg text-xs font-extrabold bg-slate-900 text-white transition-all">🇮🇳 INR (₹)</button>
+          <button id="currUSDBtn" onclick="setCurrency('USD')" class="px-3 py-1 rounded-lg text-xs font-extrabold text-slate-500 hover:text-slate-800 transition-all">🌎 USD ($)</button>
+        </div>
+      </div>
+
+      <!-- Pricing Cards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        
+        <!-- Monthly Plan -->
+        <div class="rounded-2xl p-5 border border-slate-200 bg-white flex flex-col justify-between space-y-4">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Pro Monthly</span>
+            <div class="mt-2 flex items-baseline gap-1">
+              <span id="priceMonthly" class="text-3xl font-black text-slate-900">₹49</span>
+              <span class="text-xs font-bold text-slate-400">/ month</span>
+            </div>
+            <ul class="mt-4 space-y-2 text-xs text-slate-600 font-medium">
+              <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-emerald-500"></i> Unlimited Habits</li>
+              <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-emerald-500"></i> Multi-device Sync</li>
+              <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-emerald-500"></i> JSON Data Export</li>
+            </ul>
+          </div>
+          <button onclick="initiateCheckout('monthly')" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs tap-press transition-all">
+            Select Monthly
+          </button>
+        </div>
+
+        <!-- Yearly Plan (Highlighted) -->
+        <div class="rounded-2xl p-5 border-2 border-brand-orange bg-orange-50/20 flex flex-col justify-between space-y-4 relative shadow-lg shadow-orange-500/10">
+          <span class="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-brand-orange to-brand-amber text-white text-[10px] font-black uppercase tracking-wider">Save 32%</span>
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-brand-orange">Pro Yearly</span>
+            <div class="mt-2 flex items-baseline gap-1">
+              <span id="priceYearly" class="text-3xl font-black text-slate-900">₹399</span>
+              <span class="text-xs font-bold text-slate-400">/ year</span>
+            </div>
+            <ul class="mt-4 space-y-2 text-xs text-slate-700 font-semibold">
+              <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-brand-orange"></i> Everything in Monthly</li>
+              <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-brand-orange"></i> Priority Cloud Backup</li>
+              <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-brand-orange"></i> All Audio Soundscapes</li>
+            </ul>
+          </div>
+          <button onclick="initiateCheckout('yearly')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-orange to-brand-amber text-white font-extrabold text-xs shadow-md shadow-orange-500/25 tap-press transition-all">
+            Unlock Yearly Pass
+          </button>
+        </div>
+
+        <!-- 30-Day Challenge -->
+        <div class="rounded-2xl p-5 border border-slate-200 bg-slate-50/60 flex flex-col justify-between space-y-4">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700">30-Day Sprint</span>
+            <div class="mt-2 flex items-baseline gap-1">
+              <span id="priceChallenge" class="text-3xl font-black text-slate-900">₹149</span>
+              <span class="text-xs font-bold text-slate-400">one-time</span>
+            </div>
+            <ul class="mt-4 space-y-2 text-xs text-slate-600 font-medium">
+              <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-emerald-600"></i> 30-Day Guided Sprint</li>
+              <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-emerald-600"></i> Pro Access for 30 Days</li>
+              <li class="flex items-center gap-1.5"><i class="ph-bold ph-check text-emerald-600"></i> Completion Certificate</li>
+            </ul>
+          </div>
+          <button onclick="initiateCheckout('challenge')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs tap-press transition-all">
+            Join Challenge
+          </button>
+        </div>
+
+      </div>
+
+      <p id="checkoutStatusNotice" class="text-center text-xs font-bold text-slate-500"></p>
+    </div>
+  </div>
+
+  <!-- 2. SETTINGS MODAL -->
   <div id="settingsModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-slate-100 space-y-6">
       <div class="flex items-center justify-between">
-        <h3 class="text-base font-extrabold text-slate-900">Preferences</h3>
+        <h3 class="text-base font-extrabold text-slate-900">Preferences & Backup</h3>
         <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600">
           <i class="ph-bold ph-x text-lg"></i>
         </button>
@@ -251,10 +379,22 @@
         </div>
       </div>
 
+      <div class="space-y-2 pt-2 border-t border-slate-100">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Data Backup (JSON)</label>
+          <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">PRO</span>
+        </div>
+        <button onclick="exportHabitsBackupJSON()" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 tap-press">
+          <i class="ph-bold ph-download-simple text-sm text-brand-orange"></i>
+          <span>Export Offline Backup</span>
+        </button>
+      </div>
+
       <button onclick="closeSettingsModal()" class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800">Done</button>
     </div>
   </div>
 
+  <!-- 3. NEW HABIT MODAL -->
   <div id="newHabitModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-5">
       <div class="flex items-center justify-between">
@@ -293,7 +433,7 @@
     </div>
   </div>
 
-  <!-- AUTH MODAL -->
+  <!-- 4. AUTH MODAL -->
   <div id="authModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-slate-100 space-y-5 text-center">
       <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-2xl">
@@ -315,7 +455,10 @@
 
       <div id="authLoggedInView" class="hidden space-y-3">
         <div class="p-3 bg-emerald-50/60 border border-emerald-100 rounded-2xl text-left">
-          <p class="text-[11px] font-bold text-emerald-800">Connected Account</p>
+          <div class="flex items-center justify-between">
+            <p class="text-[11px] font-bold text-emerald-800">Connected Account</p>
+            <span id="modalTierTag" class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-white text-slate-700">FREE</span>
+          </div>
           <p id="userEmailDisplay" class="text-xs font-extrabold text-slate-700 truncate mt-0.5"></p>
         </div>
         <button onclick="signOutUser()" class="w-full py-2.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs tap-press transition-colors">
@@ -327,6 +470,7 @@
     </div>
   </div>
 
+  <!-- 5. SOS RESCUE MODAL -->
   <div id="sosModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-5">
       <div class="flex items-center gap-3">
@@ -349,10 +493,15 @@
   </div>
 
   <script>
+    // --- SUPABASE CLIENT ---
     var SUPABASE_URL = "https://ihddakddlyzfrvbuhfcz.supabase.co";
     var SUPABASE_ANON_KEY = "sb_publishable_Xs2laFMCzGChcoxavx6WSA_pAstVL_K";
     var sbClient = null;
     var currentUser = null;
+    var userTier = 'free'; // 'free' or 'pro'
+    var activeCurrency = 'INR';
+
+    const FREE_HABIT_LIMIT = 3;
 
     try {
       if (window.supabase && typeof window.supabase.createClient === 'function') {
@@ -395,7 +544,7 @@
       } catch (e) {}
     }
 
-    // --- DATA STATE ---
+    // --- DATA & TIER STATE ---
     var DEFAULT_HABITS = [
       { id: 'h_1', title: 'Fitness & Health', micro_action: 'Put on shoes & do 5 squats', category: 'fitness', streak: 3, history: {} },
       { id: 'h_2', title: 'Side Business Work', micro_action: 'Open laptop & write 1 line', category: 'business', streak: 5, history: {} },
@@ -407,6 +556,53 @@
 
     function getTodayKey() {
       return new Date().toISOString().split('T')[0];
+    }
+
+    async function fetchUserProfileTier() {
+      if (!sbClient || !currentUser) {
+        userTier = 'free';
+        updateTierUI();
+        return;
+      }
+      try {
+        const { data, error } = await sbClient
+          .from('profiles')
+          .select('tier')
+          .eq('id', currentUser.id)
+          .single();
+
+        if (!error && data && data.tier) {
+          userTier = data.tier;
+        } else {
+          userTier = 'free';
+        }
+      } catch (e) {
+        userTier = 'free';
+      }
+      updateTierUI();
+    }
+
+    function updateTierUI() {
+      const badge = document.getElementById('tierBadge');
+      const modalTag = document.getElementById('modalTierTag');
+      const upgradeBtn = document.getElementById('headerUpgradeBtn');
+
+      if (userTier === 'pro') {
+        if (badge) {
+          badge.innerText = 'PRO';
+          badge.className = 'text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-orange-500 text-white tracking-wider';
+        }
+        if (modalTag) modalTag.innerText = 'PRO';
+        if (upgradeBtn) upgradeBtn.classList.add('hidden');
+      } else {
+        if (badge) {
+          badge.innerText = 'FREE';
+          badge.className = 'text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 tracking-wider';
+        }
+        if (modalTag) modalTag.innerText = 'FREE';
+        if (upgradeBtn) upgradeBtn.classList.remove('hidden');
+      }
+      renderVitals();
     }
 
     async function loadHabits() {
@@ -436,6 +632,30 @@
       localStorage.setItem('momentum_habits', JSON.stringify(habits));
     }
 
+    // --- FREEMIUM GATEKEEPER ---
+    function handleNewHabitClick() {
+      if (userTier !== 'pro' && habits.length >= FREE_HABIT_LIMIT) {
+        openPricingModal('limit');
+        return;
+      }
+      openNewHabitModal();
+    }
+
+    function exportHabitsBackupJSON() {
+      if (userTier !== 'pro') {
+        closeSettingsModal();
+        openPricingModal('feature');
+        return;
+      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(habits, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `momentum-shift-backup-${getTodayKey()}.json`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
     // --- RENDERING ---
     function renderApp() {
       renderVitals();
@@ -461,7 +681,19 @@
       let maxStreak = 0;
       habits.forEach(h => { if ((h.streak || 0) > maxStreak) maxStreak = h.streak; });
       document.getElementById('headerStreakCount').innerText = `${maxStreak}d`;
-      document.getElementById('habitCountBadge').innerText = `${total} Total`;
+
+      const limitIndicator = document.getElementById('habitLimitIndicator');
+      if (limitIndicator) {
+        if (userTier === 'pro') {
+          limitIndicator.innerText = `${total} Active (Unlimited Pro)`;
+          limitIndicator.className = 'text-xs font-extrabold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+        } else {
+          limitIndicator.innerText = `${total} / ${FREE_HABIT_LIMIT} Free Slots`;
+          limitIndicator.className = total >= FREE_HABIT_LIMIT
+            ? 'text-xs font-extrabold px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-200'
+            : 'text-xs font-extrabold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600';
+        }
+      }
     }
 
     function renderHabits() {
@@ -526,13 +758,17 @@
           category: habit.category,
           streak: habit.streak,
           history: habit.history
-        }).then(({ error }) => {
-          if (error) console.error("Supabase toggle upsert error:", error);
-        });
+        }).catch(() => {});
       }
     }
 
-    function saveNewHabit() {
+    async function saveNewHabit() {
+      if (userTier !== 'pro' && habits.length >= FREE_HABIT_LIMIT) {
+        closeNewHabitModal();
+        openPricingModal('limit');
+        return;
+      }
+
       const title = document.getElementById('habitTitleInput').value.trim();
       const micro = document.getElementById('habitMicroInput').value.trim();
       const category = document.getElementById('habitCategoryInput').value;
@@ -547,13 +783,9 @@
         streak: 0,
         history: {}
       };
-      habits.unshift(newHabit);
-      persistHabits();
-      closeNewHabitModal();
-      renderApp();
 
       if (sbClient && currentUser) {
-        sbClient.from('habits').insert({
+        const { error } = await sbClient.from('habits').insert({
           id: newHabit.id,
           user_id: currentUser.id,
           title: newHabit.title,
@@ -562,11 +794,22 @@
           category: newHabit.category,
           streak: newHabit.streak,
           history: newHabit.history
-        }).then(({ error }) => {
-          if (error) console.error("Supabase insert error:", error);
-          else console.log("Habit saved to Supabase successfully!");
         });
+
+        if (error) {
+          if (error.message && error.message.includes('FREEMIUM_LIMIT_REACHED')) {
+            closeNewHabitModal();
+            openPricingModal('limit');
+            return;
+          }
+          console.error("Insert error:", error);
+        }
       }
+
+      habits.unshift(newHabit);
+      persistHabits();
+      closeNewHabitModal();
+      renderApp();
     }
 
     function deleteHabit(id) {
@@ -611,10 +854,61 @@
       }
     }
 
+    // --- PRICING & CURRENCY CONTROLS ---
+    function setCurrency(curr) {
+      activeCurrency = curr;
+      const inrBtn = document.getElementById('currINRBtn');
+      const usdBtn = document.getElementById('currUSDBtn');
+
+      if (curr === 'INR') {
+        inrBtn.className = 'px-3 py-1 rounded-lg text-xs font-extrabold bg-slate-900 text-white transition-all';
+        usdBtn.className = 'px-3 py-1 rounded-lg text-xs font-extrabold text-slate-500 hover:text-slate-800 transition-all';
+        document.getElementById('priceMonthly').innerText = '₹49';
+        document.getElementById('priceYearly').innerText = '₹399';
+        document.getElementById('priceChallenge').innerText = '₹149';
+      } else {
+        usdBtn.className = 'px-3 py-1 rounded-lg text-xs font-extrabold bg-slate-900 text-white transition-all';
+        inrBtn.className = 'px-3 py-1 rounded-lg text-xs font-extrabold text-slate-500 hover:text-slate-800 transition-all';
+        document.getElementById('priceMonthly').innerText = '$1.99';
+        document.getElementById('priceYearly').innerText = '$9.99';
+        document.getElementById('priceChallenge').innerText = '$3.99';
+      }
+    }
+
+    function initiateCheckout(planType) {
+      const notice = document.getElementById('checkoutStatusNotice');
+      if (!currentUser) {
+        notice.innerText = "Please connect your email via Cloud Sync first before upgrading.";
+        notice.className = "text-center text-xs font-bold text-rose-600";
+        setTimeout(() => {
+          closePricingModal();
+          openAuthModal();
+        }, 1200);
+        return;
+      }
+      notice.innerText = `Razorpay checkout gateway for '${planType.toUpperCase()}' will launch in Phase 4!`;
+      notice.className = "text-center text-xs font-extrabold text-emerald-600";
+    }
+
     // Modal Controls
+    function openPricingModal(triggerSource) {
+      const alertBadge = document.getElementById('paywallAlertBadge');
+      document.getElementById('checkoutStatusNotice').innerText = '';
+      if (triggerSource === 'limit') {
+        alertBadge.classList.remove('hidden');
+      } else {
+        alertBadge.classList.add('hidden');
+      }
+      document.getElementById('pricingModal').classList.remove('hidden');
+    }
+    function closePricingModal() { document.getElementById('pricingModal').classList.add('hidden'); }
     function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); updateSoundUI(); }
     function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
-    function openNewHabitModal() { document.getElementById('newHabitModal').classList.remove('hidden'); }
+    function openNewHabitModal() {
+      document.getElementById('habitTitleInput').value = '';
+      document.getElementById('habitMicroInput').value = '';
+      document.getElementById('newHabitModal').classList.remove('hidden');
+    }
     function closeNewHabitModal() { document.getElementById('newHabitModal').classList.add('hidden'); }
     function openSosModal() { document.getElementById('sosModal').classList.remove('hidden'); }
     function closeSosModal() { document.getElementById('sosModal').classList.add('hidden'); }
@@ -673,6 +967,8 @@
       if (sbClient) {
         await sbClient.auth.signOut();
         currentUser = null;
+        userTier = 'free';
+        updateTierUI();
         updateAuthUI(null);
         closeAuthModal();
         loadHabits();
@@ -685,10 +981,12 @@
         const { data: { session } } = await sbClient.auth.getSession();
         currentUser = session?.user || null;
         updateAuthUI(currentUser);
+        await fetchUserProfileTier();
 
-        sbClient.auth.onAuthStateChange((_event, session) => {
+        sbClient.auth.onAuthStateChange(async (_event, session) => {
           currentUser = session?.user || null;
           updateAuthUI(currentUser);
+          await fetchUserProfileTier();
           loadHabits();
         });
       }
