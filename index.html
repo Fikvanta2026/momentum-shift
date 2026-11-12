@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Momentum Shift • Visual Consistency Engine</title>
-
+  
   <!-- PWA Mobile App Support -->
   <meta name="theme-color" content="#FF5722">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -31,7 +31,7 @@
       document.getElementById('pwaManifest').setAttribute('href', URL.createObjectURL(blob));
     })();
   </script>
-  
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -110,7 +110,6 @@
           <span>Pro</span>
         </button>
 
-        <!-- Certificate Button -->
         <button onclick="openCertificateModal()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-700 hover:bg-amber-100 font-bold text-xs tap-press transition-all" title="30-Day Consistency Certificate">
           <i class="ph-fill ph-trophy text-amber-500 text-sm"></i>
           <span class="hidden sm:inline">Certificate</span>
@@ -323,7 +322,6 @@
         </button>
       </div>
 
-      <!-- Customization Inputs -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
         <div>
           <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Recipient Full Name</label>
@@ -335,12 +333,10 @@
         </div>
       </div>
 
-      <!-- High-Res Canvas Preview -->
       <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-inner bg-slate-100 flex items-center justify-center">
         <canvas id="certificateCanvas" width="1200" height="800" class="w-full h-auto block"></canvas>
       </div>
 
-      <!-- Actions -->
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
         <p class="text-[11px] font-semibold text-slate-400">
           Generated from live Momentum Shift check-in metrics.
@@ -375,7 +371,6 @@
         </button>
       </div>
 
-      <!-- Currency Toggle -->
       <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
         <span class="text-xs font-bold text-slate-600 pl-2">Select Billing Currency</span>
         <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200">
@@ -384,7 +379,6 @@
         </div>
       </div>
 
-      <!-- Pricing Cards Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="rounded-2xl p-5 border border-slate-200 bg-white flex flex-col justify-between space-y-4">
           <div>
@@ -652,4 +646,712 @@
     var DEFAULT_HABITS = [
       { id: 'h_1', title: 'Fitness & Health', micro_action: 'Put on shoes & do 5 squats', category: 'fitness', streak: 3, history: {} },
       { id: 'h_2', title: 'Side Business Work', micro_action: 'Open laptop & write 1 line', category: 'business', streak: 5, history: {} },
-      { id: 'h_3', title: 'Focus Reading', micro_action:
+      { id: 'h_3', title: 'Focus Reading', micro_action: 'Read 1 single page', category: 'mind', streak: 1, history: {} }
+    ];
+
+    var habits = [];
+    var velocityChartInstance = null;
+
+    function getTodayKey() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    async function fetchUserProfileTier() {
+      if (!sbClient || !currentUser) {
+        userTier = 'free';
+        updateTierUI();
+        return;
+      }
+      try {
+        const { data, error } = await sbClient
+          .from('profiles')
+          .select('tier')
+          .eq('id', currentUser.id)
+          .single();
+
+        if (!error && data && data.tier) {
+          userTier = data.tier;
+        } else {
+          userTier = 'free';
+        }
+      } catch (e) {
+        userTier = 'free';
+      }
+      updateTierUI();
+    }
+
+    function updateTierUI() {
+      const badge = document.getElementById('tierBadge');
+      const modalTag = document.getElementById('modalTierTag');
+      const upgradeBtn = document.getElementById('headerUpgradeBtn');
+
+      if (userTier === 'pro') {
+        if (badge) {
+          badge.innerText = 'PRO';
+          badge.className = 'text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-orange-500 text-white tracking-wider';
+        }
+        if (modalTag) modalTag.innerText = 'PRO';
+        if (upgradeBtn) upgradeBtn.classList.add('hidden');
+      } else {
+        if (badge) {
+          badge.innerText = 'FREE';
+          badge.className = 'text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 tracking-wider';
+        }
+        if (modalTag) modalTag.innerText = 'FREE';
+        if (upgradeBtn) upgradeBtn.classList.remove('hidden');
+      }
+      renderVitals();
+    }
+
+    async function loadHabits() {
+      if (sbClient && currentUser) {
+        try {
+          const { data, error } = await sbClient.from('habits').select('*').eq('user_id', currentUser.id);
+          if (!error && data && data.length > 0) {
+            habits = data;
+            renderApp();
+            return;
+          }
+        } catch (e) {
+          console.warn("DB read error:", e);
+        }
+      }
+
+      try {
+        const stored = localStorage.getItem('momentum_habits');
+        habits = stored ? JSON.parse(stored) : [...DEFAULT_HABITS];
+      } catch (e) {
+        habits = [...DEFAULT_HABITS];
+      }
+      renderApp();
+    }
+
+    function persistHabits() {
+      localStorage.setItem('momentum_habits', JSON.stringify(habits));
+    }
+
+    // --- FREEMIUM GATEKEEPER ---
+    function handleNewHabitClick() {
+      if (userTier !== 'pro' && habits.length >= FREE_HABIT_LIMIT) {
+        openPricingModal('limit');
+        return;
+      }
+      openNewHabitModal();
+    }
+
+    function exportHabitsBackupJSON() {
+      if (userTier !== 'pro') {
+        closeSettingsModal();
+        openPricingModal('feature');
+        return;
+      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(habits, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `momentum-shift-backup-${getTodayKey()}.json`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    // --- RENDERING ---
+    function renderApp() {
+      renderVitals();
+      renderHabits();
+      renderChart();
+    }
+
+    function renderVitals() {
+      const today = getTodayKey();
+      const total = habits.length;
+      const completed = habits.filter(h => h.history && h.history[today]).length;
+      const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+      document.getElementById('circlePercent').innerText = `${pct}%`;
+      document.getElementById('circleRatio').innerText = `${completed} of ${total} Done`;
+
+      const circle = document.getElementById('progressCircle');
+      if (circle) {
+        const circ = 2 * Math.PI * 40;
+        circle.style.strokeDashoffset = circ - (pct / 100) * circ;
+      }
+
+      let maxStreak = 0;
+      let totalReps = 0;
+      habits.forEach(h => {
+        if ((h.streak || 0) > maxStreak) maxStreak = h.streak;
+        if (h.history) totalReps += Object.keys(h.history).length;
+      });
+      document.getElementById('headerStreakCount').innerText = `${maxStreak}d`;
+      document.getElementById('identityScore').innerText = `${totalReps * 10} / 50`;
+      document.getElementById('identityProgressBar').style.width = `${Math.min(100, totalReps * 20)}%`;
+
+      const limitIndicator = document.getElementById('habitLimitIndicator');
+      if (limitIndicator) {
+        if (userTier === 'pro') {
+          limitIndicator.innerText = `${total} Active (Unlimited Pro)`;
+          limitIndicator.className = 'text-xs font-extrabold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+        } else {
+          limitIndicator.innerText = `${total} / ${FREE_HABIT_LIMIT} Free Slots`;
+          limitIndicator.className = total >= FREE_HABIT_LIMIT
+            ? 'text-xs font-extrabold px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-200'
+            : 'text-xs font-extrabold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600';
+        }
+      }
+    }
+
+    function renderHabits() {
+      const container = document.getElementById('habitGrid');
+      if (!container) return;
+      container.innerHTML = '';
+      const today = getTodayKey();
+
+      habits.forEach(h => {
+        const isDone = h.history && h.history[today];
+        const card = document.createElement('div');
+        card.className = `rounded-3xl p-5 border transition-all ${
+          isDone ? 'bg-emerald-50/40 border-emerald-200' : 'bg-white border-slate-100 shadow-card-warm'
+        }`;
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between">
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-bold uppercase bg-orange-100 text-orange-700">${h.category}</span>
+            <span class="text-xs font-bold text-orange-600">🔥 ${h.streak || 0}d</span>
+          </div>
+          <h3 class="text-base font-extrabold text-slate-800 mt-2">${h.title}</h3>
+          <p class="text-xs text-slate-500 mt-1">🎯 2-Min: ${h.micro_action || h.micro || ''}</p>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <button onclick="deleteHabit('${h.id}')" class="text-slate-300 hover:text-rose-500 text-xs font-bold">Delete</button>
+            <button onclick="toggleHabit('${h.id}')" class="px-4 py-2 rounded-xl font-bold text-xs tap-press ${
+              isDone ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-white'
+            }">
+              ${isDone ? '✓ Completed' : 'Check In'}
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function toggleHabit(id) {
+      const today = getTodayKey();
+      const habit = habits.find(h => h.id === id);
+      if (!habit) return;
+      if (!habit.history) habit.history = {};
+
+      if (habit.history[today]) {
+        delete habit.history[today];
+        habit.streak = Math.max(0, (habit.streak || 1) - 1);
+      } else {
+        habit.history[today] = true;
+        habit.streak = (habit.streak || 0) + 1;
+        playSound();
+        if (window.confetti) confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
+      }
+
+      persistHabits();
+      renderApp();
+
+      if (sbClient && currentUser) {
+        sbClient.from('habits').upsert({
+          id: habit.id,
+          user_id: currentUser.id,
+          title: habit.title,
+          micro_action: habit.micro_action || habit.micro || '',
+          identity: habit.title,
+          category: habit.category,
+          streak: habit.streak,
+          history: habit.history
+        }).catch(() => {});
+      }
+    }
+
+    async function saveNewHabit() {
+      if (userTier !== 'pro' && habits.length >= FREE_HABIT_LIMIT) {
+        closeNewHabitModal();
+        openPricingModal('limit');
+        return;
+      }
+
+      const title = document.getElementById('habitTitleInput').value.trim();
+      const micro = document.getElementById('habitMicroInput').value.trim();
+      const category = document.getElementById('habitCategoryInput').value;
+      if (!title || !micro) return;
+
+      const newHabit = {
+        id: 'h_' + Date.now(),
+        title: title,
+        micro_action: micro,
+        identity: title,
+        category: category,
+        streak: 0,
+        history: {}
+      };
+
+      if (sbClient && currentUser) {
+        const { error } = await sbClient.from('habits').insert({
+          id: newHabit.id,
+          user_id: currentUser.id,
+          title: newHabit.title,
+          micro_action: newHabit.micro_action,
+          identity: newHabit.identity,
+          category: newHabit.category,
+          streak: newHabit.streak,
+          history: newHabit.history
+        });
+
+        if (error) {
+          if (error.message && error.message.includes('FREEMIUM_LIMIT_REACHED')) {
+            closeNewHabitModal();
+            openPricingModal('limit');
+            return;
+          }
+          console.error("Insert error:", error);
+        }
+      }
+
+      habits.unshift(newHabit);
+      persistHabits();
+      closeNewHabitModal();
+      renderApp();
+    }
+
+    function deleteHabit(id) {
+      habits = habits.filter(h => h.id !== id);
+      persistHabits();
+      renderApp();
+      if (sbClient && currentUser) {
+        sbClient.from('habits').delete().eq('id', id).catch(() => {});
+      }
+    }
+
+    function renderChart() {
+      const ctx = document.getElementById('velocityChart');
+      if (!ctx || !window.Chart) return;
+      const labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const data = [1, 2, 3, 2, 3, 1, 3];
+
+      if (velocityChartInstance) velocityChartInstance.destroy();
+      velocityChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{ data, backgroundColor: '#FF5722', borderRadius: 6 }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    function switchVisualView(mode) {
+      const chart = document.getElementById('chartContainer');
+      const grid = document.getElementById('gridContainer');
+      if (mode === 'chart') {
+        chart.classList.remove('hidden');
+        grid.classList.add('hidden');
+      } else {
+        chart.classList.add('hidden');
+        grid.classList.remove('hidden');
+      }
+    }
+
+    // --- 30-DAY CONSISTENCY CERTIFICATE ENGINE ---
+    function openCertificateModal() {
+      const nameInput = document.getElementById('certNameInput');
+      const habitInput = document.getElementById('certHabitInput');
+
+      if (!nameInput.value && currentUser && currentUser.email) {
+        const defaultName = currentUser.email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        nameInput.value = defaultName;
+      } else if (!nameInput.value) {
+        nameInput.value = "Momentum Achiever";
+      }
+
+      if (!habitInput.value) {
+        habitInput.value = habits.length > 0 ? habits[0].title : "Daily Micro-Habit Consistency";
+      }
+
+      document.getElementById('certificateModal').classList.remove('hidden');
+      renderCertificateCanvas();
+    }
+
+    function closeCertificateModal() {
+      document.getElementById('certificateModal').classList.add('hidden');
+    }
+
+    function renderCertificateCanvas() {
+      const canvas = document.getElementById('certificateCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      const recipientName = (document.getElementById('certNameInput').value || "Momentum Achiever").trim();
+      const habitFocus = (document.getElementById('certHabitInput').value || "Daily Consistency Protocol").trim();
+
+      let maxStreak = 0;
+      let totalReps = 0;
+      habits.forEach(item => {
+        if ((item.streak || 0) > maxStreak) maxStreak = item.streak;
+        if (item.history) totalReps += Object.keys(item.history).length;
+      });
+
+      const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+      bgGrad.addColorStop(0, '#0F172A');
+      bgGrad.addColorStop(1, '#1E293B');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      const radial = ctx.createRadialGradient(w * 0.85, h * 0.15, 20, w * 0.85, h * 0.15, 420);
+      radial.addColorStop(0, 'rgba(255, 87, 34, 0.22)');
+      radial.addColorStop(1, 'rgba(255, 87, 34, 0)');
+      ctx.fillStyle = radial;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = '#FF9800';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(36, 36, w - 72, h - 72);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(52, 52, w - 104, h - 104);
+
+      ctx.fillStyle = '#FF9800';
+      ctx.font = '800 20px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('MOMENTUM SHIFT OS • IDENTITY PROTOCOL', w / 2, 120);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 52px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('CERTIFICATE OF CONSISTENCY', w / 2, 195);
+
+      const lineGrad = ctx.createLinearGradient(w / 2 - 180, 0, w / 2 + 180, 0);
+      lineGrad.addColorStop(0, 'rgba(255,87,34,0)');
+      lineGrad.addColorStop(0.5, '#FF5722');
+      lineGrad.addColorStop(1, 'rgba(255,87,34,0)');
+      ctx.fillStyle = lineGrad;
+      ctx.fillRect(w / 2 - 180, 222, 360, 4);
+
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '500 22px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('This official credential is proudly awarded to', w / 2, 285);
+
+      ctx.fillStyle = '#FBBF24';
+      ctx.font = '800 58px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(recipientName, w / 2, 365);
+
+      ctx.fillStyle = '#E2E8F0';
+      ctx.font = '500 22px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('For demonstrating disciplined daily execution & habit mastery in:', w / 2, 435);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 28px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`“${habitFocus}”`, w / 2, 482);
+
+      const boxY = 535;
+      const boxH = 95;
+      const boxW = 240;
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+      ctx.fillRect(w / 2 - 390, boxY, boxW, boxH);
+      ctx.fillStyle = '#FF5722';
+      ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`${maxStreak} DAYS`, w / 2 - 270, boxY + 46);
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '700 13px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('PEAK ACTIVE STREAK', w / 2 - 270, boxY + 74);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+      ctx.fillRect(w / 2 - 120, boxY, boxW, boxH);
+      ctx.fillStyle = '#10B981';
+      ctx.font = '800 32px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`${totalReps} REPS`, w / 2, boxY + 46);
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '700 13px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('VERIFIED CHECK-INS', w / 2, boxY + 74);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+      ctx.fillRect(w / 2 + 150, boxY, boxW, boxH);
+      ctx.fillStyle = userTier === 'pro' ? '#FBBF24' : '#38BDF8';
+      ctx.font = '800 30px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(userTier === 'pro' ? 'PRO VERIFIED' : 'SPRINT MEMBER', w / 2 + 270, boxY + 46);
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '700 13px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('CREDENTIAL TIER', w / 2 + 270, boxY + 74);
+
+      const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      const certId = 'MS-' + Math.abs(recipientName.split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0)).toString(16).toUpperCase().slice(0, 6);
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '600 16px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`Issued: ${dateStr}`, 95, 710);
+      ctx.fillText(`Credential ID: ${certId}`, 95, 735);
+
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 18px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('Momentum Shift Engine', w - 95, 710);
+      ctx.fillStyle = '#FF9800';
+      ctx.font = '600 14px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('momentum-shift-phi.vercel.app', w - 95, 735);
+    }
+
+    function downloadCertificatePNG() {
+      const canvas = document.getElementById('certificateCanvas');
+      if (!canvas) return;
+      const link = document.createElement('a');
+      link.download = `Momentum-Shift-Certificate-${getTodayKey()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      if (window.confetti) confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+    }
+
+    // --- PRICING & RAZORPAY CHECKOUT ENGINE ---
+    function setCurrency(curr) {
+      activeCurrency = curr;
+      const inrBtn = document.getElementById('currINRBtn');
+      const usdBtn = document.getElementById('currUSDBtn');
+
+      if (curr === 'INR') {
+        inrBtn.className = 'px-3 py-1 rounded-lg text-xs font-extrabold bg-slate-900 text-white transition-all';
+        usdBtn.className = 'px-3 py-1 rounded-lg text-xs font-extrabold text-slate-500 hover:text-slate-800 transition-all';
+        document.getElementById('priceMonthly').innerText = '₹49';
+        document.getElementById('priceYearly').innerText = '₹399';
+        document.getElementById('priceChallenge').innerText = '₹149';
+      } else {
+        usdBtn.className = 'px-3 py-1 rounded-lg text-xs font-extrabold bg-slate-900 text-white transition-all';
+        inrBtn.className = 'px-3 py-1 rounded-lg text-xs font-extrabold text-slate-500 hover:text-slate-800 transition-all';
+        document.getElementById('priceMonthly').innerText = '$1.99';
+        document.getElementById('priceYearly').innerText = '$9.99';
+        document.getElementById('priceChallenge').innerText = '$3.99';
+      }
+    }
+
+    function initiateCheckout(planType) {
+      const notice = document.getElementById('checkoutStatusNotice');
+
+      if (!currentUser) {
+        notice.innerText = "Please connect your email via Cloud Sync first before upgrading.";
+        notice.className = "text-center text-xs font-bold text-rose-600";
+        setTimeout(() => {
+          closePricingModal();
+          openAuthModal();
+        }, 1200);
+        return;
+      }
+
+      if (typeof Razorpay === 'undefined') {
+        notice.innerText = "Payment gateway loading... please try again in a second.";
+        notice.className = "text-center text-xs font-bold text-amber-600";
+        return;
+      }
+
+      const planPricing = {
+        monthly: { INR: 49, USD: 1.99, label: "Pro Monthly Subscription" },
+        yearly: { INR: 399, USD: 9.99, label: "Pro Yearly Pass" },
+        challenge: { INR: 149, USD: 3.99, label: "30-Day Consistency Sprint" }
+      };
+
+      const selected = planPricing[planType];
+      const amountDisplay = selected[activeCurrency];
+      const amountSubunits = Math.round(amountDisplay * 100);
+
+      var options = {
+        key: RAZORPAY_KEY_ID,
+        amount: amountSubunits,
+        currency: activeCurrency,
+        name: "Momentum Shift",
+        description: selected.label,
+        prefill: {
+          email: currentUser.email || ""
+        },
+        theme: {
+          color: "#FF5722"
+        },
+        handler: async function (response) {
+          notice.innerText = "Payment verified! Activating Pro account...";
+          notice.className = "text-center text-xs font-extrabold text-emerald-600";
+
+          try {
+            const { error } = await sbClient.rpc('activate_pro_subscription', {
+              p_payment_id: response.razorpay_payment_id,
+              p_plan_type: planType,
+              p_amount: amountDisplay,
+              p_currency: activeCurrency
+            });
+
+            if (error) throw error;
+
+            userTier = 'pro';
+            updateTierUI();
+            if (window.confetti) confetti({ particleCount: 90, spread: 75, origin: { y: 0.6 } });
+            notice.innerText = "Welcome to Momentum Pro! Unlimited habits unlocked.";
+
+            setTimeout(() => {
+              closePricingModal();
+            }, 1500);
+          } catch (err) {
+            console.error("Pro activation error:", err);
+            notice.innerText = "Payment received (" + response.razorpay_payment_id + "), syncing tier...";
+          }
+        }
+      };
+
+      var rzp = new Razorpay(options);
+      rzp.on('payment.failed', function (response) {
+        notice.innerText = "Payment failed: " + (response.error.description || "Cancelled");
+        notice.className = "text-center text-xs font-bold text-rose-600";
+      });
+      rzp.open();
+    }
+
+    // Modal Controls
+    function openPricingModal(triggerSource) {
+      const alertBadge = document.getElementById('paywallAlertBadge');
+      document.getElementById('checkoutStatusNotice').innerText = '';
+      if (triggerSource === 'limit') {
+        alertBadge.classList.remove('hidden');
+      } else {
+        alertBadge.classList.add('hidden');
+      }
+      document.getElementById('pricingModal').classList.remove('hidden');
+    }
+    function closePricingModal() { document.getElementById('pricingModal').classList.add('hidden'); }
+    function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); updateSoundUI(); }
+    function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+    function openNewHabitModal() {
+      document.getElementById('habitTitleInput').value = '';
+      document.getElementById('habitMicroInput').value = '';
+      document.getElementById('newHabitModal').classList.remove('hidden');
+    }
+    function closeNewHabitModal() { document.getElementById('newHabitModal').classList.add('hidden'); }
+    function openSosModal() { document.getElementById('sosModal').classList.remove('hidden'); }
+    function closeSosModal() { document.getElementById('sosModal').classList.add('hidden'); }
+    function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
+    function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
+
+    // --- AUTHENTICATION & UI SYNC ---
+    function updateAuthUI(user) {
+      const authBtn = document.getElementById('authBtn');
+      const authLabel = document.getElementById('authLabel');
+      const authIcon = document.getElementById('authIcon');
+      const loggedOutView = document.getElementById('authLoggedOutView');
+      const loggedInView = document.getElementById('authLoggedInView');
+      const userEmailDisplay = document.getElementById('userEmailDisplay');
+
+      if (user) {
+        authLabel.innerText = "Synced";
+        authIcon.className = "ph-fill ph-check-circle text-emerald-500";
+        authBtn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-200 bg-emerald-50 text-emerald-700";
+        
+        if (loggedOutView) loggedOutView.classList.add('hidden');
+        if (loggedInView) loggedInView.classList.remove('hidden');
+        if (userEmailDisplay) userEmailDisplay.innerText = user.email || "Active User";
+      } else {
+        authLabel.innerText = "Cloud";
+        authIcon.className = "ph-bold ph-database text-slate-500";
+        authBtn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100";
+        
+        if (loggedOutView) loggedOutView.classList.remove('hidden');
+        if (loggedInView) loggedInView.classList.add('hidden');
+      }
+    }
+
+    async function signInWithGoogle() {
+      const notice = document.getElementById('magicLinkNotice');
+      if (!sbClient) return;
+      notice.innerText = "Redirecting to Google...";
+      notice.className = "text-[10px] text-brand-orange font-bold";
+
+      const { error } = await sbClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+
+      if (error) {
+        notice.innerText = error.message;
+        notice.className = "text-[10px] text-rose-500 font-bold";
+      }
+    }
+
+    function signInWithMagicLink() {
+      const email = document.getElementById('magicEmailInput').value.trim();
+      const notice = document.getElementById('magicLinkNotice');
+      if (!email || !sbClient) return;
+      notice.innerText = "Sending link...";
+      notice.className = "text-[10px] text-brand-orange font-bold";
+
+      sbClient.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.origin }
+      }).then(({ error }) => {
+        if (error) {
+          notice.innerText = error.message;
+          notice.className = "text-[10px] text-rose-500 font-bold";
+        } else {
+          notice.innerText = "Magic link sent! Check your email.";
+          notice.className = "text-[10px] text-emerald-600 font-bold";
+        }
+      });
+    }
+
+    async function signOutUser() {
+      if (sbClient) {
+        await sbClient.auth.signOut();
+        currentUser = null;
+        userTier = 'free';
+        updateTierUI();
+        updateAuthUI(null);
+        closeAuthModal();
+        loadHabits();
+      }
+    }
+
+    // Auto Init on Page Load
+    window.addEventListener('DOMContentLoaded', async () => {
+      if (sbClient) {
+        const { data: { session } } = await sbClient.auth.getSession();
+        currentUser = session?.user || null;
+        updateAuthUI(currentUser);
+        await fetchUserProfileTier();
+
+        sbClient.auth.onAuthStateChange(async (_event, session) => {
+          currentUser = session?.user || null;
+          updateAuthUI(currentUser);
+          await fetchUserProfileTier();
+          loadHabits();
+        });
+      }
+      loadHabits();
+    });
+
+    // --- PWA INSTALL PROMPT ---
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const headerRight = document.querySelector('header .flex.items-center.gap-2.shrink-0');
+      if (headerRight && !document.getElementById('pwaInstallBtn')) {
+        const btn = document.createElement('button');
+        btn.id = 'pwaInstallBtn';
+        btn.className = 'flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-slate-900 text-white font-bold text-[11px] shadow-sm tap-press';
+        btn.innerHTML = '<i class="ph-bold ph-device-mobile text-xs text-brand-amber"></i><span>Install</span>';
+        btn.onclick = async () => {
+          if (!deferredPrompt) return;
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          btn.remove();
+        };
+        headerRight.prepend(btn);
+      }
+    });
+  </script>
+</body>
+</html>
