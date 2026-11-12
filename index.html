@@ -9,28 +9,8 @@
   <meta name="theme-color" content="#FF5722">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Momentum Shift">
-  <link id="pwaManifest" rel="manifest">
-  <script>
-    (function() {
-      const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF5722"/><stop offset="100%" stop-color="#FF9800"/></linearGradient></defs><rect width="512" height="512" rx="112" fill="url(#g)"/><path d="M294 84L142 286h112l-36 142 152-202H258l36-142z" fill="#FFFFFF"/></svg>`;
-      const iconUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
-      const manifest = {
-        name: "Momentum Shift • Visual Consistency Engine",
-        short_name: "Momentum",
-        start_url: "/",
-        display: "standalone",
-        background_color: "#F8FAFC",
-        theme_color: "#FF5722",
-        icons: [
-          { src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
-          { src: iconUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
-        ]
-      };
-      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-      document.getElementById('pwaManifest').setAttribute('href', URL.createObjectURL(blob));
-    })();
-  </script>
+  <meta name="apple-mobile-web-app-title" content="Momentum">
+  <link rel="manifest" href="/manifest.json">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -86,46 +66,49 @@
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col pb-24 md:pb-12 antialiased selection:bg-orange-100 selection:text-orange-600">
 
-  <!-- TOP APP BAR -->
-  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5 min-w-0">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-orange to-brand-amber flex items-center justify-center text-white shadow-md shadow-orange-500/20 shrink-0">
-          <i class="ph-bold ph-lightning text-xl"></i>
+  <!-- TOP APP BAR (MOBILE-FIRST ZERO OVERLAP) -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100">
+    <div class="max-w-6xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-1.5">
+      <!-- Brand Logo & Tier -->
+      <div class="flex items-center gap-2 shrink-0">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-brand-orange to-brand-amber flex items-center justify-center text-white shadow-md shadow-orange-500/20 shrink-0">
+          <i class="ph-bold ph-lightning text-lg sm:text-xl"></i>
         </div>
-        <div class="flex flex-col min-w-0">
-          <div class="flex items-center gap-1.5">
-            <span class="text-lg font-black tracking-tight bg-gradient-to-r from-brand-orange to-brand-amber bg-clip-text text-transparent truncate leading-tight">
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1">
+            <span class="text-sm sm:text-lg font-black tracking-tight bg-gradient-to-r from-brand-orange to-brand-amber bg-clip-text text-transparent leading-tight">
               Momentum
             </span>
-            <span id="tierBadge" class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 tracking-wider">FREE</span>
+            <span id="tierBadge" class="text-[8px] sm:text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 tracking-wider">FREE</span>
           </div>
-          <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase leading-none hidden sm:inline">Shift OS</span>
+          <span class="text-[9px] font-bold tracking-widest text-slate-400 uppercase leading-none hidden sm:inline">Shift OS</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 shrink-0">
+      <!-- Right Action Controls -->
+      <div id="headerActions" class="flex items-center gap-1.5 sm:gap-2 shrink-0">
         <button id="headerUpgradeBtn" onclick="openPricingModal('header')" class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold text-[11px] shadow-sm hover:shadow tap-press transition-all">
           <i class="ph-fill ph-crown text-xs"></i>
           <span>Pro</span>
         </button>
 
-        <button onclick="openCertificateModal()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-700 hover:bg-amber-100 font-bold text-xs tap-press transition-all" title="30-Day Consistency Certificate">
+        <!-- Certificate Button (Desktop only; mobile has it in bottom bar) -->
+        <button onclick="openCertificateModal()" class="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-700 hover:bg-amber-100 font-bold text-xs tap-press transition-all" title="30-Day Consistency Certificate">
           <i class="ph-fill ph-trophy text-amber-500 text-sm"></i>
-          <span class="hidden sm:inline">Certificate</span>
+          <span>Certificate</span>
         </button>
 
-        <div id="streakBadgeContainer" class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-orange-50 border border-orange-100/80 text-orange-600 font-bold text-xs transition-all">
-          <i id="fireIcon" class="ph-fill ph-fire text-orange-500 text-sm"></i>
+        <div id="streakBadgeContainer" class="flex items-center gap-1 px-2 py-1.5 rounded-full bg-orange-50 border border-orange-100/80 text-orange-600 font-bold text-[11px] transition-all">
+          <i id="fireIcon" class="ph-fill ph-fire text-orange-500 text-xs sm:text-sm"></i>
           <span id="headerStreakCount">0d</span>
         </div>
 
-        <button onclick="openSettingsModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 tap-press transition-colors">
+        <button onclick="openSettingsModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 tap-press transition-colors" aria-label="Settings">
           <i class="ph-bold ph-sliders text-sm"></i>
         </button>
 
-        <button id="authBtn" onclick="openAuthModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100">
-          <i id="authIcon" class="ph-bold ph-database text-sm"></i>
+        <button id="authBtn" onclick="openAuthModal()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-bold transition-all border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100">
+          <i id="authIcon" class="ph-bold ph-database text-xs sm:text-sm"></i>
           <span id="authLabel">Cloud</span>
         </button>
 
@@ -688,14 +671,14 @@
       if (userTier === 'pro') {
         if (badge) {
           badge.innerText = 'PRO';
-          badge.className = 'text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-orange-500 text-white tracking-wider';
+          badge.className = 'text-[8px] sm:text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-orange-500 text-white tracking-wider';
         }
         if (modalTag) modalTag.innerText = 'PRO';
         if (upgradeBtn) upgradeBtn.classList.add('hidden');
       } else {
         if (badge) {
           badge.innerText = 'FREE';
-          badge.className = 'text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 tracking-wider';
+          badge.className = 'text-[8px] sm:text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 tracking-wider';
         }
         if (modalTag) modalTag.innerText = 'FREE';
         if (upgradeBtn) upgradeBtn.classList.remove('hidden');
@@ -1246,7 +1229,7 @@
       if (user) {
         authLabel.innerText = "Synced";
         authIcon.className = "ph-fill ph-check-circle text-emerald-500";
-        authBtn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-200 bg-emerald-50 text-emerald-700";
+        authBtn.className = "flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-bold border border-emerald-200 bg-emerald-50 text-emerald-700";
         
         if (loggedOutView) loggedOutView.classList.add('hidden');
         if (loggedInView) loggedInView.classList.remove('hidden');
@@ -1254,7 +1237,7 @@
       } else {
         authLabel.innerText = "Cloud";
         authIcon.className = "ph-bold ph-database text-slate-500";
-        authBtn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100";
+        authBtn.className = "flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-bold border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100";
         
         if (loggedOutView) loggedOutView.classList.remove('hidden');
         if (loggedInView) loggedInView.classList.add('hidden');
@@ -1313,6 +1296,35 @@
       }
     }
 
+    // --- SERVICE WORKER & PWA INSTALL PROMPT ---
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const headerRight = document.getElementById('headerActions');
+      if (headerRight && !document.getElementById('pwaInstallBtn')) {
+        const btn = document.createElement('button');
+        btn.id = 'pwaInstallBtn';
+        btn.className = 'flex items-center gap-1 px-2 py-1.5 rounded-full bg-slate-900 text-white font-bold text-[11px] shadow-sm tap-press';
+        btn.innerHTML = '<i class="ph-bold ph-download-simple text-xs text-brand-amber"></i><span class="hidden sm:inline">Install</span>';
+        btn.title = 'Install App';
+        btn.onclick = async () => {
+          if (!deferredPrompt) return;
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          btn.remove();
+        };
+        headerRight.prepend(btn);
+      }
+    });
+
     // Auto Init on Page Load
     window.addEventListener('DOMContentLoaded', async () => {
       if (sbClient) {
@@ -1329,28 +1341,6 @@
         });
       }
       loadHabits();
-    });
-
-    // --- PWA INSTALL PROMPT ---
-    let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      const headerRight = document.querySelector('header .flex.items-center.gap-2.shrink-0');
-      if (headerRight && !document.getElementById('pwaInstallBtn')) {
-        const btn = document.createElement('button');
-        btn.id = 'pwaInstallBtn';
-        btn.className = 'flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-slate-900 text-white font-bold text-[11px] shadow-sm tap-press';
-        btn.innerHTML = '<i class="ph-bold ph-device-mobile text-xs text-brand-amber"></i><span>Install</span>';
-        btn.onclick = async () => {
-          if (!deferredPrompt) return;
-          deferredPrompt.prompt();
-          await deferredPrompt.userChoice;
-          deferredPrompt = null;
-          btn.remove();
-        };
-        headerRight.prepend(btn);
-      }
     });
   </script>
 </body>
