@@ -10,6 +10,8 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Razorpay Checkout SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <script>
     tailwind.config = {
@@ -77,30 +79,25 @@
       </div>
 
       <div class="flex items-center gap-2 shrink-0">
-        <!-- Upgrade / Pricing Pill -->
         <button id="headerUpgradeBtn" onclick="openPricingModal('header')" class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold text-[11px] shadow-sm hover:shadow tap-press transition-all">
           <i class="ph-fill ph-crown text-xs"></i>
           <span>Pro</span>
         </button>
 
-        <!-- Streak Badge -->
         <div id="streakBadgeContainer" class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-orange-50 border border-orange-100/80 text-orange-600 font-bold text-xs transition-all">
           <i id="fireIcon" class="ph-fill ph-fire text-orange-500 text-sm"></i>
           <span id="headerStreakCount">0d</span>
         </div>
 
-        <!-- Settings -->
         <button onclick="openSettingsModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 tap-press transition-colors">
           <i class="ph-bold ph-sliders text-sm"></i>
         </button>
 
-        <!-- Auth Status Button -->
         <button id="authBtn" onclick="openAuthModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100">
           <i id="authIcon" class="ph-bold ph-database text-sm"></i>
           <span id="authLabel">Cloud</span>
         </button>
 
-        <!-- New Habit Desktop -->
         <button onclick="handleNewHabitClick()" class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-brand-orange to-brand-amber text-white font-bold text-xs shadow-md shadow-orange-500/25 hover:shadow-lg tap-press transition-all">
           <i class="ph-bold ph-plus text-sm"></i>
           <span>New Habit</span>
@@ -189,7 +186,7 @@
     </section>
 
     <!-- 30-DAY CHALLENGE PROMO BANNER -->
-    <section class="rounded-3xl p-5 sm:p-6 bg-slate-900 text-white shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden">
+    <section id="challengeBanner" class="rounded-3xl p-5 sm:p-6 bg-slate-900 text-white shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden">
       <div class="absolute -right-8 -top-8 w-40 h-40 bg-brand-orange/20 rounded-full blur-2xl pointer-events-none"></div>
       <div class="space-y-1 relative z-10">
         <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-300 text-[10px] font-extrabold uppercase tracking-wider">
@@ -314,7 +311,7 @@
           </button>
         </div>
 
-        <!-- Yearly Plan (Highlighted) -->
+        <!-- Yearly Plan -->
         <div class="rounded-2xl p-5 border-2 border-brand-orange bg-orange-50/20 flex flex-col justify-between space-y-4 relative shadow-lg shadow-orange-500/10">
           <span class="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-brand-orange to-brand-amber text-white text-[10px] font-black uppercase tracking-wider">Save 32%</span>
           <div>
@@ -493,14 +490,15 @@
   </div>
 
   <script>
-    // --- SUPABASE CLIENT ---
+    // --- CONFIGURATION ---
     var SUPABASE_URL = "https://ihddakddlyzfrvbuhfcz.supabase.co";
     var SUPABASE_ANON_KEY = "sb_publishable_Xs2laFMCzGChcoxavx6WSA_pAstVL_K";
+    var RAZORPAY_KEY_ID = "rzp_test_TzJCrYI8XhiEEp";
+
     var sbClient = null;
     var currentUser = null;
-    var userTier = 'free'; // 'free' or 'pro'
+    var userTier = 'free';
     var activeCurrency = 'INR';
-
     const FREE_HABIT_LIMIT = 3;
 
     try {
@@ -586,6 +584,7 @@
       const badge = document.getElementById('tierBadge');
       const modalTag = document.getElementById('modalTierTag');
       const upgradeBtn = document.getElementById('headerUpgradeBtn');
+      const challengeBanner = document.getElementById('challengeBanner');
 
       if (userTier === 'pro') {
         if (badge) {
@@ -594,6 +593,7 @@
         }
         if (modalTag) modalTag.innerText = 'PRO';
         if (upgradeBtn) upgradeBtn.classList.add('hidden');
+        if (challengeBanner) challengeBanner.classList.add('hidden');
       } else {
         if (badge) {
           badge.innerText = 'FREE';
@@ -601,6 +601,7 @@
         }
         if (modalTag) modalTag.innerText = 'FREE';
         if (upgradeBtn) upgradeBtn.classList.remove('hidden');
+        if (challengeBanner) challengeBanner.classList.remove('hidden');
       }
       renderVitals();
     }
@@ -854,7 +855,7 @@
       }
     }
 
-    // --- PRICING & CURRENCY CONTROLS ---
+    // --- PRICING & RAZORPAY CHECKOUT ENGINE ---
     function setCurrency(curr) {
       activeCurrency = curr;
       const inrBtn = document.getElementById('currINRBtn');
@@ -877,6 +878,7 @@
 
     function initiateCheckout(planType) {
       const notice = document.getElementById('checkoutStatusNotice');
+
       if (!currentUser) {
         notice.innerText = "Please connect your email via Cloud Sync first before upgrading.";
         notice.className = "text-center text-xs font-bold text-rose-600";
@@ -886,8 +888,70 @@
         }, 1200);
         return;
       }
-      notice.innerText = `Razorpay checkout gateway for '${planType.toUpperCase()}' will launch in Phase 4!`;
-      notice.className = "text-center text-xs font-extrabold text-emerald-600";
+
+      if (typeof Razorpay === 'undefined') {
+        notice.innerText = "Payment gateway loading... please try again in a second.";
+        notice.className = "text-center text-xs font-bold text-amber-600";
+        return;
+      }
+
+      const planPricing = {
+        monthly: { INR: 49, USD: 1.99, label: "Pro Monthly Subscription" },
+        yearly: { INR: 399, USD: 9.99, label: "Pro Yearly Pass" },
+        challenge: { INR: 149, USD: 3.99, label: "30-Day Consistency Sprint" }
+      };
+
+      const selected = planPricing[planType];
+      const amountDisplay = selected[activeCurrency];
+      const amountSubunits = Math.round(amountDisplay * 100); // paise or cents
+
+      var options = {
+        key: RAZORPAY_KEY_ID,
+        amount: amountSubunits,
+        currency: activeCurrency,
+        name: "Momentum Shift",
+        description: selected.label,
+        prefill: {
+          email: currentUser.email || ""
+        },
+        theme: {
+          color: "#FF5722"
+        },
+        handler: async function (response) {
+          notice.innerText = "Payment verified! Activating Pro account...";
+          notice.className = "text-center text-xs font-extrabold text-emerald-600";
+
+          try {
+            const { error } = await sbClient.rpc('activate_pro_subscription', {
+              p_payment_id: response.razorpay_payment_id,
+              p_plan_type: planType,
+              p_amount: amountDisplay,
+              p_currency: activeCurrency
+            });
+
+            if (error) throw error;
+
+            userTier = 'pro';
+            updateTierUI();
+            if (window.confetti) confetti({ particleCount: 90, spread: 75, origin: { y: 0.6 } });
+            notice.innerText = "Welcome to Momentum Pro! Unlimited habits unlocked.";
+
+            setTimeout(() => {
+              closePricingModal();
+            }, 1500);
+          } catch (err) {
+            console.error("Pro activation error:", err);
+            notice.innerText = "Payment received (" + response.razorpay_payment_id + "), syncing tier...";
+          }
+        }
+      };
+
+      var rzp = new Razorpay(options);
+      rzp.on('payment.failed', function (response) {
+        notice.innerText = "Payment failed: " + (response.error.description || "Cancelled");
+        notice.className = "text-center text-xs font-bold text-rose-600";
+      });
+      rzp.open();
     }
 
     // Modal Controls
